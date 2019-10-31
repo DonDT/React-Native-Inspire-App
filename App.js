@@ -19,6 +19,8 @@ import Profile from "./screens/Profile";
 import News from "./screens/News";
 import LifeStyle from "./screens/LifeStyle";
 
+import CustomDrawerLogo from "./screens/DrawerNavItems/CustomDrawerLogo";
+
 class App extends Component {
   render() {
     return (
@@ -48,31 +50,42 @@ const MainBottomNavigation = createBottomTabNavigator({
   HomeScreen: {
     screen: HomeScreen,
     navigationOptions: {
-      tabBarLabel: "Home"
+      tabBarLabel: "Home",
+      tabBarIcon: ({}) => <Ionicons name="ios-home" size={24} color="#3432a8" />
     }
   },
   Ideas: {
     screen: Ideas,
     navigationOptions: {
-      tabBarLabel: "Ideas"
+      tabBarLabel: "Ideas",
+      tabBarIcon: ({}) => (
+        <Ionicons name="ios-thunderstorm" size={24} color="#3432a8" />
+      )
     }
   },
   Goals: {
     screen: Goals,
     navigationOptions: {
-      tabBarLabel: "Home"
+      tabBarLabel: "Goals",
+      tabBarIcon: ({}) => (
+        <Ionicons name="ios-trending-up" size={24} color="#3432a8" />
+      )
     }
   },
   Motivations: {
     screen: Motivations,
     navigationOptions: {
-      tabBarLabel: "Motivation"
+      tabBarLabel: "Motivation",
+      tabBarIcon: ({}) => <Ionicons name="ios-walk" size={24} color="#3432a8" />
     }
   },
   Ambitions: {
     screen: Ambitions,
     navigationOptions: {
-      tabBarLabel: "Ambitions"
+      tabBarLabel: "Ambitions",
+      tabBarIcon: ({}) => (
+        <Ionicons name="ios-trophy" size={24} color="#3432a8" />
+      )
     }
   }
 });
@@ -95,44 +108,49 @@ const BottomStacknavigation = createStackNavigator({
   }
 });
 
-const AppDrawerNavigation = createDrawerNavigator({
-  BottomStacknavigation: {
-    screen: BottomStacknavigation,
-    navigationOptions: {
-      title: "Home",
-      drawerIcon: () => <Ionicons name="ios-home" size={24} />
-    }
-  },
+const AppDrawerNavigation = createDrawerNavigator(
+  {
+    BottomStacknavigation: {
+      screen: BottomStacknavigation,
+      navigationOptions: {
+        title: "Home",
+        drawerIcon: () => <Ionicons name="ios-home" size={24} />
+      }
+    },
 
-  Profile: {
-    screen: Profile,
-    navigationOptions: {
-      title: "Profile",
-      drawerIcon: () => <Ionicons name="ios-happy" size={24} />
+    Profile: {
+      screen: Profile,
+      navigationOptions: {
+        title: "Profile",
+        drawerIcon: () => <Ionicons name="ios-happy" size={24} />
+      }
+    },
+    News: {
+      screen: News,
+      navigationOptions: {
+        title: "News",
+        drawerIcon: () => <Ionicons name="ios-chatboxes" size={24} />
+      }
+    },
+    LifeStyle: {
+      screen: LifeStyle,
+      navigationOptions: {
+        title: "LifeStyle",
+        drawerIcon: () => <Ionicons name="ios-contacts" size={24} />
+      }
+    },
+    SettingsScreen: {
+      screen: SettingsScreen,
+      navigationOptions: {
+        title: "Settings",
+        drawerIcon: () => <Ionicons name="ios-settings" size={24} />
+      }
     }
   },
-  News: {
-    screen: News,
-    navigationOptions: {
-      title: "News",
-      drawerIcon: () => <Ionicons name="ios-chatboxes" size={24} />
-    }
-  },
-  LifeStyle: {
-    screen: LifeStyle,
-    navigationOptions: {
-      title: "LifeStyle",
-      drawerIcon: () => <Ionicons name="ios-contacts" size={24} />
-    }
-  },
-  SettingsScreen: {
-    screen: SettingsScreen,
-    navigationOptions: {
-      title: "Settings",
-      drawerIcon: () => <Ionicons name="ios-settings" size={24} />
-    }
+  {
+    contentComponent: CustomDrawerLogo
   }
-});
+);
 
 const styles = StyleSheet.create({
   container: {
