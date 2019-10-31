@@ -18,6 +18,7 @@ import Motivations from "./screens/Motivations";
 import Profile from "./screens/Profile";
 import News from "./screens/News";
 import LifeStyle from "./screens/LifeStyle";
+import ItemScreen from "./screens/ItemScreen";
 
 import CustomDrawerLogo from "./screens/DrawerNavItems/CustomDrawerLogo";
 
@@ -31,20 +32,26 @@ class App extends Component {
   }
 }
 
-const LoginRegisterStack = createStackNavigator({
-  WellComeScreen: {
-    screen: WellComeScreen,
-    navigationOptions: {}
+const LoginRegisterStack = createStackNavigator(
+  {
+    WellComeScreen: {
+      screen: WellComeScreen,
+      navigationOptions: {
+        header: null
+      }
+    },
+    LoginScreen: {
+      screen: LoginScreen
+    },
+    RegisterScreen: {
+      screen: RegisterScreen,
+      navigationOptions: {}
+    }
   },
-  LoginScreen: {
-    screen: LoginScreen,
-    navigationOptions: {}
-  },
-  RegisterScreen: {
-    screen: RegisterScreen,
-    navigationOptions: {}
+  {
+    mode: "modal"
   }
-});
+);
 
 const MainBottomNavigation = createBottomTabNavigator({
   HomeScreen: {
@@ -105,6 +112,9 @@ const BottomStacknavigation = createStackNavigator({
         )
       };
     }
+  },
+  ItemScreen: {
+    screen: ItemScreen
   }
 });
 

@@ -1,11 +1,15 @@
 import React, { Component } from "react";
-import { Text, StyleSheet, View } from "react-native";
+import { Text, StyleSheet, View, Button } from "react-native";
 
 class HomeScreen extends Component {
   render() {
     return (
       <View style={styles.container}>
         <Text>Ideas Screen </Text>
+        <Button
+          onPress={() => this.props.navigation.navigate("ItemScreen")}
+          title="Item"
+        />
       </View>
     );
   }
