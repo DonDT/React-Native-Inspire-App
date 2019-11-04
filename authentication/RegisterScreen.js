@@ -8,10 +8,14 @@ import {
   Button
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import ValidateForm from "../utils/forms/validateForm";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import { signUp } from "../store/actions/users_actions";
 
 class RegisterScreen extends Component {
   state = {
-    type: "Login",
+    type: "Register",
     formError: false,
     form: {
       name: {
@@ -20,7 +24,6 @@ class RegisterScreen extends Component {
         type: "textInput",
         rules: {
           isRequired: true
-          //isValidEmail: true
         }
       },
       email: {
@@ -52,6 +55,52 @@ class RegisterScreen extends Component {
     }
   };
 
+  onInputChange = (name, value) => {
+    this.setState({
+      formError: false
+    });
+    let formCopy = this.state.form;
+    formCopy[name].value = value;
+
+    let rules = formCopy[name].rules;
+    let valid = ValidateForm(value, rules, formCopy);
+
+    formCopy[name].valid = valid;
+
+    this.setState({
+      form: formCopy
+    });
+  };
+
+  submitUserInfo = () => {
+    let isFormValid = true;
+    let formToSubmit = {};
+
+    const formCopy = this.state.form;
+
+    for (let key in formCopy) {
+      isFormValid = isFormValid && formCopy[key].valid;
+      if (formToSubmit[key] !== "confirmPassword") {
+        formToSubmit[key] = formCopy[key].value;
+      }
+    }
+
+    if (isFormValid) {
+      this.props.signUp(formToSubmit);
+    } else {
+      this.setState({
+        formError: true
+      });
+    }
+  };
+
+  formErrors = () =>
+    this.state.formError ? (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorMessage}>Check your information</Text>
+      </View>
+    ) : null;
+
   render() {
     return (
       <View style={styles.container}>
@@ -73,31 +122,45 @@ class RegisterScreen extends Component {
               placeholder="Name"
               placeholderTextColor="#cecece"
               style={styles.textInput}
+              //type={this.state.form.name.type}
+              value={this.state.form.name.value}
+              onChangeText={value => this.onInputChange("name", value)}
             />
             <TextInput
               autoCapitalize={"none"}
               placeholder="Email"
               placeholderTextColor="#cecece"
               style={styles.textInput}
+              value={this.state.form.email.value}
+              onChangeText={value => this.onInputChange("email", value)}
             />
             <TextInput
               autoCapitalize={"none"}
               placeholder="Password"
               placeholderTextColor="#cecece"
               style={styles.textInput}
+              value={this.state.form.password.value}
+              onChangeText={value => this.onInputChange("password", value)}
+              secureTextEntry
             />
             <TextInput
               autoCapitalize={"none"}
               placeholder="Confirm Password"
               placeholderTextColor="#cecece"
               style={styles.textInput}
+              value={this.state.form.confirmPassword.value}
+              onChangeText={value =>
+                this.onInputChange("confirmPassword", value)
+              }
+              secureTextEntry
             />
+            {this.formErrors()}
           </View>
           <View style={styles.LoginText}>
             <Button
               style={{ color: "white" }}
               title="Create Account "
-              onPress={() => this.props.navigation.navigate("LoginScreen")}
+              onPress={() => this.submitUserInfo()}
             />
           </View>
           <View style={styles.CreateText}>
@@ -167,7 +230,31 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     //alignItems: "stretch",
     marginBottom: 35
+  },
+  errorContainer: {
+    marginBottom: 10,
+    marginTop: 30,
+    backgroundColor: "pink",
+    padding: 13
+  },
+  errorMessage: {
+    color: "#fff",
+    textAlign: "center",
+    textAlignVertical: "center"
   }
 });
 
-export default RegisterScreen;
+const mapStateToProps = state => {
+  return {
+    User: state.User
+  };
+};
+
+const mapDispatchActionToProps = dispatch => {
+  return bindActionCreators({ signUp }, dispatch);
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchActionToProps
+)(RegisterScreen);

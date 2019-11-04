@@ -10,6 +10,9 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import FormInput from "../utils/forms/formInput";
 import ValidateForm from "../utils/forms/validateForm";
+import { connect } from "react-redux";
+import { signIn } from "../store/actions/users_actions";
+import { bindActionCreators } from "redux";
 
 class LoginScreen extends Component {
   state = {
@@ -74,7 +77,7 @@ class LoginScreen extends Component {
     }
 
     if (isFormValid) {
-      console.log(formToSubmit);
+      this.props.signIn(formToSubmit);
     } else {
       this.setState({
         formError: true
@@ -209,4 +212,17 @@ const styles = StyleSheet.create({
   }
 });
 
-export default LoginScreen;
+function mapStateToProps(state) {
+  return {
+    User: state.User
+  };
+}
+
+function mapDispatchActionToProps(dispatch) {
+  return bindActionCreators({ signIn }, dispatch);
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchActionToProps
+)(LoginScreen);
