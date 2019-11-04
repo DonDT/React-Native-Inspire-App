@@ -8,9 +8,9 @@ import { Ionicons } from "@expo/vector-icons";
 
 import HomeScreen from "./screens/HomeScreen";
 import SettingsScreen from "./screens/SettingsScreen";
-import LoginScreen from "./screens/LoginScreen";
+import LoginScreen from "./authentication/LoginScreen";
 import WellComeScreen from "./screens/WellComeScreen";
-import RegisterScreen from "./screens/RegisterScreen";
+import RegisterScreen from "./authentication/RegisterScreen";
 import Goals from "./screens/Goals";
 import Ambitions from "./screens/Ambitions";
 import Ideas from "./screens/Ideas";
@@ -22,11 +22,25 @@ import ItemScreen from "./screens/ItemScreen";
 
 import CustomDrawerLogo from "./screens/DrawerNavItems/CustomDrawerLogo";
 
+import { Provider } from "react-redux";
+import { createStore, applyMiddleware, compose } from "redux";
+import promiseMiddleware from "redux-promise";
+import reducers from "./store/reducers";
+
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+
+const createStoreWithMiddleware = createStore(
+  reducers,
+  composeEnhancers(applyMiddleware(promiseMiddleware))
+);
+
 class App extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <AppContainer />
+        <Provider store={createStoreWithMiddleware}>
+          <AppContainer />
+        </Provider>
       </View>
     );
   }

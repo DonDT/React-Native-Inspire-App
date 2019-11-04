@@ -11,8 +11,45 @@ import { Ionicons } from "@expo/vector-icons";
 
 class RegisterScreen extends Component {
   state = {
-    email: "",
-    password: ""
+    type: "Login",
+    formError: false,
+    form: {
+      name: {
+        value: "",
+        valid: false,
+        type: "textInput",
+        rules: {
+          isRequired: true
+          //isValidEmail: true
+        }
+      },
+      email: {
+        value: "",
+        valid: false,
+        type: "textInput",
+        rules: {
+          isRequired: true,
+          isValidEmail: true
+        }
+      },
+      password: {
+        value: "",
+        valid: false,
+        type: "textInput",
+        rules: {
+          isRequired: true,
+          minLength: 8
+        }
+      },
+      confirmPassword: {
+        value: "",
+        valid: false,
+        type: "textInput",
+        rules: {
+          confirmPW: "password"
+        }
+      }
+    }
   };
 
   render() {

@@ -8,11 +8,78 @@ import {
   Button
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import FormInput from "../utils/forms/formInput";
+import ValidateForm from "../utils/forms/validateForm";
 
 class LoginScreen extends Component {
   state = {
-    email: "",
-    password: ""
+    type: "Login",
+    formError: false,
+    form: {
+      email: {
+        value: "",
+        valid: false,
+        type: "textInput",
+        rules: {
+          isRequired: true,
+          isValidEmail: true
+        }
+      },
+      password: {
+        value: "",
+        valid: false,
+        type: "textInput",
+        rules: {
+          isRequired: true,
+          minLength: 8
+        }
+      }
+    }
+  };
+
+  onInputChange = (name, value) => {
+    this.setState({
+      formError: false
+    });
+    let formCopy = this.state.form;
+    formCopy[name].value = value;
+
+    let rules = formCopy[name].rules;
+    let valid = ValidateForm(value, rules, formCopy);
+
+    formCopy[name].valid = valid;
+
+    this.setState({
+      form: formCopy
+    });
+  };
+
+  formErrors = () =>
+    this.state.formError ? (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorMessage}>Check your information</Text>
+      </View>
+    ) : null;
+
+  submitUserInfo = () => {
+    let isFormValid = true;
+    let formToSubmit = {};
+
+    const formCopy = this.state.form;
+
+    for (let key in formCopy) {
+      isFormValid = isFormValid && formCopy[key].valid;
+
+      formToSubmit[key] = formCopy[key].value;
+    }
+
+    if (isFormValid) {
+      console.log(formToSubmit);
+    } else {
+      this.setState({
+        formError: true
+      });
+    }
   };
 
   render() {
@@ -31,24 +98,33 @@ class LoginScreen extends Component {
             </View>
           </View>
           <View>
-            <TextInput
+            <FormInput
               autoCapitalize={"none"}
               placeholder="Email"
               placeholderTextColor="#cecece"
               style={styles.textInput}
+              type={this.state.form.email.type}
+              value={this.state.form.email.value}
+              onChangeText={value => this.onInputChange("email", value)}
             />
-            <TextInput
+            <FormInput
               autoCapitalize={"none"}
               placeholder="Password"
               placeholderTextColor="#cecece"
               style={styles.textInput}
+              type={this.state.form.password.type}
+              value={this.state.form.password.value}
+              onChangeText={value => this.onInputChange("password", value)}
+              secureTextEntry
             />
           </View>
+          {this.formErrors()}
           <View style={styles.LoginText}>
             <Button
               style={{ color: "white" }}
               title="Login "
-              onPress={() => this.props.navigation.navigate("HomeScreen")}
+              //onPress={() => this.props.navigation.navigate("HomeScreen")}
+              onPress={() => this.submitUserInfo()}
             />
           </View>
           <View style={styles.CreateText}>
@@ -93,7 +169,7 @@ const styles = StyleSheet.create({
   },
   inputLogin: {
     width: 275,
-    height: 400,
+    height: 450,
     borderWidth: 1,
     borderColor: "#cecece",
     alignItems: "center",
@@ -118,6 +194,18 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     //alignItems: "stretch",
     marginBottom: 35
+  },
+  errorContainer: {
+    marginBottom: 10,
+    marginTop: 30,
+    backgroundColor: "pink",
+    padding: 13,
+    borderRadius: 25
+  },
+  errorMessage: {
+    color: "#fff",
+    textAlign: "center",
+    textAlignVertical: "center"
   }
 });
 
