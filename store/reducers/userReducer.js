@@ -15,9 +15,9 @@ export default function(state = {}, action) {
       return {
         ...state,
         auth: {
-          name: action.payload.name,
-          email: action.payload.email,
-          token: action.payload.token
+          uid: action.payload.localId || false,
+          token: action.payload.idToken || false,
+          refToken: action.payload.refreshToken || false
         }
       };
 
