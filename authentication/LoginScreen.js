@@ -13,6 +13,7 @@ import ValidateForm from "../utils/forms/validateForm";
 import { connect } from "react-redux";
 import { signIn } from "../store/actions/users_actions";
 import { bindActionCreators } from "redux";
+import { setTokens } from "../utils/helperURLs";
 
 class LoginScreen extends Component {
   state = {
@@ -64,6 +65,17 @@ class LoginScreen extends Component {
       </View>
     ) : null;
 
+  manageAccess = () => {
+    if (!this.props.User.auth.uid) {
+      this.setState({ formError: true });
+    } else {
+      setTokens(this.props.User.auth, () => {
+        this.setState({ formError: false });
+        this.props.navigation.navigate("HomeScreen");
+      });
+    }
+  };
+
   submitUserInfo = () => {
     let isFormValid = true;
     let formToSubmit = {};
@@ -77,7 +89,7 @@ class LoginScreen extends Component {
     }
 
     if (isFormValid) {
-      this.props.signIn(formToSubmit);
+      this.props.signIn(formToSubmit).then(() => this.manageAccess());
     } else {
       this.setState({
         formError: true
