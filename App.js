@@ -19,6 +19,7 @@ import Profile from "./screens/Profile";
 import News from "./screens/News";
 import LifeStyle from "./screens/LifeStyle";
 import ItemScreen from "./screens/ItemScreen";
+import InputScreen from "./screens/InputScreen";
 
 import CustomDrawerLogo from "./screens/DrawerNavItems/CustomDrawerLogo";
 
@@ -91,6 +92,8 @@ const MainBottomNavigation = createBottomTabNavigator({
     screen: Ideas,
     navigationOptions: {
       tabBarLabel: "Ideas",
+      headerBackTitle: "Home",
+
       tabBarIcon: ({}) => (
         <Ionicons name="ios-thunderstorm" size={24} color="#3432a8" />
       )
@@ -135,12 +138,37 @@ const BottomStacknavigation = createStackNavigator({
             onPress={() => navigation.openDrawer()}
             style={{ marginLeft: 10 }}
           />
+        ),
+        headerRight: (
+          <View style={styles.headerIcons}>
+            <Ionicons
+              name="ios-brush"
+              size={25}
+              onPress={() => navigation.navigate("InputScreen")}
+              style={{ marginRight: 15 }}
+            />
+            <Ionicons
+              name="ios-search"
+              size={25}
+              onPress={() => navigation.openDrawer()}
+              style={{ marginRight: 10 }}
+            />
+          </View>
         )
       };
     }
   },
   ItemScreen: {
-    screen: ItemScreen
+    screen: ItemScreen,
+    navigationOptions: () => ({
+      headerBackTitle: "Home"
+    })
+  },
+  InputScreen: {
+    screen: InputScreen,
+    navigationOptions: () => ({
+      headerBackTitle: "Home"
+    })
   }
 });
 
@@ -158,6 +186,7 @@ const AppDrawerNavigation = createDrawerNavigator(
       screen: Profile,
       navigationOptions: {
         title: "Profile",
+        headerBackTitle: "Home",
         drawerIcon: () => <Ionicons name="ios-happy" size={24} />
       }
     },
@@ -191,6 +220,9 @@ const AppDrawerNavigation = createDrawerNavigator(
 const styles = StyleSheet.create({
   container: {
     flex: 1
+  },
+  headerIcons: {
+    flexDirection: "row"
   }
 });
 
