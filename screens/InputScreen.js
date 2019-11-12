@@ -2,7 +2,13 @@ import React, { Component } from "react";
 import { Text, StyleSheet, View, TextInput } from "react-native";
 
 class InputScreen extends Component {
+  state = {
+    title: "",
+    detail: ""
+  };
+
   render() {
+    //console.log(this.state);
     return (
       <View>
         <TextInput
@@ -18,19 +24,18 @@ class InputScreen extends Component {
           autoCapitalize={"none"}
           placeholder="Title "
           placeholderTextColor="gold"
-
-          //value={this.state.form.email.value}
-          //onChangeText={value => this.onInputChange("email", value)}
+          name="title"
+          onChangeText={value => this.setState({ title: value })}
         />
         <TextInput
+          name="detail"
           style={[styles.textInput, { marginTop: 20 }]}
           autoCapitalize={"none"}
           placeholder="Wisdom "
           placeholderTextColor="gold"
           multiline={true}
           numberOfLines={30}
-          //value={this.state.form.email.value}
-          //onChangeText={value => this.onInputChange("email", value)}
+          onChangeText={value => this.setState({ detail: value })}
         />
       </View>
     );
