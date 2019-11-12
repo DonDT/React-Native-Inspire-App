@@ -14,6 +14,9 @@ import { connect } from "react-redux";
 import { signIn } from "../store/actions/users_actions";
 import { bindActionCreators } from "redux";
 import { setTokens } from "../utils/helperURLs";
+import * as firebase from "firebase/app";
+import "firebase/auth";
+import AuthCheckScreen from "../screens/AuthCheckScreen";
 
 class LoginScreen extends Component {
   state = {
@@ -65,18 +68,7 @@ class LoginScreen extends Component {
       </View>
     ) : null;
 
-  manageAccess = () => {
-    if (!this.props.User.auth.uid) {
-      this.setState({ formError: true });
-    } else {
-      setTokens(this.props.User.auth, () => {
-        this.setState({ formError: false });
-        this.props.navigation.navigate("HomeScreen");
-      });
-    }
-  };
-
-  submitUserInfo = () => {
+  submitUserInfo = async () => {
     let isFormValid = true;
     let formToSubmit = {};
 
@@ -89,7 +81,27 @@ class LoginScreen extends Component {
     }
 
     if (isFormValid) {
-      this.props.signIn(formToSubmit).then(() => this.manageAccess());
+      try {
+        const response = await firebase
+          .auth()
+          .signInWithEmailAndPassword(
+            formToSubmit.email,
+            formToSubmit.password
+          );
+        if (response) {
+          this.setState({
+            isLoading: false
+          });
+          this.props.navigation.navigate("AuthCheckScreen");
+        }
+      } catch (error) {
+        this.setState({
+          isLoading: false
+        });
+        if (error.code === "auth/user-not-found") {
+          alert("User with that credentials does not exists, try signing up");
+        }
+      }
     } else {
       this.setState({
         formError: true

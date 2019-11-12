@@ -12,6 +12,8 @@ import ValidateForm from "../utils/forms/validateForm";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { signUp } from "../store/actions/users_actions";
+import * as firebase from "firebase/app";
+import "firebase/auth";
 
 class RegisterScreen extends Component {
   state = {
@@ -72,7 +74,7 @@ class RegisterScreen extends Component {
     });
   };
 
-  submitUserInfo = () => {
+  submitUserInfo = async () => {
     let isFormValid = true;
     let formToSubmit = {};
 
@@ -86,7 +88,27 @@ class RegisterScreen extends Component {
     }
 
     if (isFormValid) {
-      this.props.signUp(formToSubmit);
+      //this.props.signUp(formToSubmit);
+      try {
+        const response = await firebase
+          .auth()
+          .createUserWithEmailAndPassword(
+            formToSubmit.email,
+            formToSubmit.password
+          );
+        if (response) {
+          this.setState({
+            isLoading: false
+          });
+          this.props.navigation.navigate("HomeScreen");
+        }
+      } catch (error) {
+        console.log(error);
+        if (error.code == "auth/email-already-in-use") {
+          alert("User Already Exist, Try Loging in Again");
+        }
+      }
+      console.log(formToSubmit);
     } else {
       this.setState({
         formError: true

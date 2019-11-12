@@ -28,11 +28,9 @@ import { createStore, applyMiddleware, compose } from "redux";
 import promiseMiddleware from "redux-promise";
 import reducers from "./store/reducers";
 
-import { connect } from "react-redux";
-import { autoSignIn } from "./store/actions/users_actions";
-import { bindActionCreators } from "redux";
-
-import { getTokens, setTokens } from "./utils/helperURLs";
+import * as firebase from "firebase/app";
+import { firebaseConfig } from "./config/config";
+import AuthCheckScreen from "./screens/AuthCheckScreen";
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
@@ -42,11 +40,14 @@ const createStoreWithMiddleware = createStore(
 );
 
 class App extends Component {
-  componentDidMount() {
-    getTokens(value => {
-      //console.log(value);
-    });
+  constructor() {
+    super();
+    this.initializeFirebase();
   }
+
+  initializeFirebase = () => {
+    firebase.initializeApp(firebaseConfig);
+  };
 
   render() {
     return (
@@ -227,20 +228,11 @@ const styles = StyleSheet.create({
 });
 
 const AppSwitchNavigator = createSwitchNavigator({
+  AuthCheckScreen,
   LoginRegisterStack,
   AppDrawerNavigation
 });
 
 const AppContainer = createAppContainer(AppSwitchNavigator);
-
-function mapStateToProps(state) {
-  return {
-    User: state.User
-  };
-}
-
-function mapDispatchActionToProps(dispatch) {
-  return bindActionCreators({ autoSignIn }, dispatch);
-}
 
 export default App;

@@ -10,6 +10,7 @@ npm-debug.*
 web-build/
 web-report/
 /utils/helperURLs
+/config
 
 # macOS
 .DS_Store
