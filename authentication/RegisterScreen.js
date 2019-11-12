@@ -108,7 +108,7 @@ class RegisterScreen extends Component {
           alert("User Already Exist, Try Loging in Again");
         }
       }
-      console.log(formToSubmit);
+      //console.log(formToSubmit);
     } else {
       this.setState({
         formError: true
