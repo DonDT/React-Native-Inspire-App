@@ -9,14 +9,15 @@ class InputScreen extends Component {
           style={[
             styles.textInput,
             {
-              marginTop: 30,
-              borderBottomColor: "#3432a8",
-              borderBottomWidth: 0.8
+              marginTop: 20,
+              borderBottomColor: "gold",
+              borderBottomWidth: 0.8,
+              paddingBottom: 20
             }
           ]}
           autoCapitalize={"none"}
-          placeholder="Title :"
-          placeholderTextColor="#cecece"
+          placeholder="Title "
+          placeholderTextColor="gold"
 
           //value={this.state.form.email.value}
           //onChangeText={value => this.onInputChange("email", value)}
@@ -24,8 +25,8 @@ class InputScreen extends Component {
         <TextInput
           style={[styles.textInput, { marginTop: 20 }]}
           autoCapitalize={"none"}
-          placeholder="Wisdom :"
-          placeholderTextColor="#cecece"
+          placeholder="Wisdom "
+          placeholderTextColor="gold"
           multiline={true}
           numberOfLines={30}
           //value={this.state.form.email.value}

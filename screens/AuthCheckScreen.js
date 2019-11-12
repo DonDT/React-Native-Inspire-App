@@ -13,7 +13,7 @@ class AuthCheckScreen extends Component {
       if (user) {
         this.props.navigation.navigate("HomeScreen", { user: user });
       } else {
-        this.props.navigation.navigate("LoginScreen");
+        this.props.navigation.navigate("WellComeScreen");
       }
     });
   };
