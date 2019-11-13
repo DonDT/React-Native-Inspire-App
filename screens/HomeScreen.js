@@ -63,7 +63,13 @@ class HomeScreen extends Component {
   };
 
   addData = async (title, detail) => {
-    this.setState({ title: "", detail: "", showInput: false, showIcons: true });
+    this.setState({
+      title: "",
+      detail: "",
+      showInput: false,
+      showIcons: true,
+      showDeleteIcon: false
+    });
     this.textInputRef.setNativeProps({ title: "", detail: "" });
     console.log(title, detail);
     //this.props.toggleIsLoadingBooks(true);
@@ -189,6 +195,11 @@ class HomeScreen extends Component {
           <View>
             <TouchableOpacity>
               <View style={styles.button1}>
+                {/* <Ionicons
+                  name="ios-close-circle"
+                  size={10}
+                  style={styles.textStyle}
+                /> */}
                 <Button
                   title="X"
                   style={styles.textStyle}
