@@ -11,7 +11,7 @@ class AuthCheckScreen extends Component {
   isUserLoggedIn = () => {
     this.unsubscribe = firebase.auth().onAuthStateChanged(user => {
       if (user) {
-        this.props.navigation.navigate("HomeScreen", { user: user });
+        this.props.navigation.navigate("HomeScreen", { user });
       } else {
         this.props.navigation.navigate("WellComeScreen");
       }

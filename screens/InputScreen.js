@@ -1,16 +1,20 @@
 import React, { Component } from "react";
 import { Text, StyleSheet, View, TextInput } from "react-native";
+import HomeScreen from "./Goals";
 
 class InputScreen extends Component {
   state = {
     title: "",
-    detail: ""
+    detail: "",
+    showDetail: false
   };
 
   render() {
-    //console.log(this.state);
     return (
       <View>
+        {this.state.showDetail && (
+          <HomeScreen title={this.state.title} detail={this.state.detail} />
+        )}
         <TextInput
           style={[
             styles.textInput,

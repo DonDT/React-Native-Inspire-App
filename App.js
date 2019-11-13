@@ -139,23 +139,23 @@ const BottomStacknavigation = createStackNavigator({
             onPress={() => navigation.openDrawer()}
             style={{ marginLeft: 10 }}
           />
-        ),
-        headerRight: (
-          <View style={styles.headerIcons}>
-            <Ionicons
-              name="ios-brush"
-              size={25}
-              onPress={() => navigation.navigate("InputScreen")}
-              style={{ marginRight: 15 }}
-            />
-            <Ionicons
-              name="ios-search"
-              size={25}
-              onPress={() => navigation.openDrawer()}
-              style={{ marginRight: 10 }}
-            />
-          </View>
         )
+        // headerRight: (
+        //   <View style={styles.headerIcons}>
+        //     <Ionicons
+        //       name="ios-brush"
+        //       size={25}
+        //       onPress={() => navigation.navigate("InputScreen")}
+        //       style={{ marginRight: 15 }}
+        //     />
+        //     <Ionicons
+        //       name="ios-search"
+        //       size={25}
+        //       onPress={() => navigation.openDrawer()}
+        //       style={{ marginRight: 10 }}
+        //     />
+        //   </View>
+        // )
       };
     }
   },
