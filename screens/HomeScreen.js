@@ -6,7 +6,8 @@ import {
   TextInput,
   SafeAreaView,
   Button,
-  TouchableOpacity
+  TouchableOpacity,
+  FlatList
 } from "react-native";
 import Goals from "./Goals";
 import Ideas from "./Ideas";
@@ -16,6 +17,8 @@ import InputScreen from "./InputScreen";
 import * as firebase from "firebase";
 import "firebase/storage";
 import { Ionicons } from "@expo/vector-icons";
+import { dataToArray } from "../utils/helperURLs";
+import DisplayItems from "../components/DisplayItems";
 
 class HomeScreen extends Component {
   constructor(props) {
@@ -35,7 +38,9 @@ class HomeScreen extends Component {
       showInput: false,
       showIcons: true,
       showDeleteIcon: false,
-      currentUser: {}
+      showWisdoms: true,
+      currentUser: {},
+      showAddIcon: false
     };
   }
 
@@ -55,10 +60,11 @@ class HomeScreen extends Component {
       .child(user.uid)
       .once("value");
 
-    // const wisdomArray = snapShotToArray(wisdom);
+    const wisdoms = dataToArray(wisdom);
 
     this.setState({
-      currentUser: currentUserData.val()
+      currentUser: currentUserData.val(),
+      wisdom: wisdoms
     });
   };
 
@@ -72,34 +78,35 @@ class HomeScreen extends Component {
     });
     this.textInputRef.setNativeProps({ title: "", detail: "" });
     console.log(title, detail);
+    // Checking if data already exist before adding to database.
     //this.props.toggleIsLoadingBooks(true);
-    // const snapshot = await firebase
-    //   .database()
-    //   .ref("wisdom")
-    //   .child(this.state.currentUser.uid)
-    //   .orderByChild("title")
-    //   .equalTo(title)
-    //   .once("value");
-    // if (snapshot.exists()) {
-    //   alert("Unable to add as book already exists");
-    // } else {
-
     try {
-      const key = await firebase
+      const snapshot = await firebase
         .database()
         .ref("wisdom")
         .child(this.state.currentUser.uid)
-        .push().key;
-      console.log(this.state.currentUser.uid);
-      await firebase
-        .database()
-        .ref("wisdom")
-        .child(this.state.currentUser.uid)
-        .child(key)
-        .set({ title: title, detail: detail, category: "ideas" });
+        .orderByChild("title")
+        .equalTo(title)
+        .once("value");
+      if (snapshot.exists()) {
+        alert("Unable to add as book already exists");
+      } else {
+        const key = await firebase
+          .database()
+          .ref("wisdom")
+          .child(this.state.currentUser.uid)
+          .push().key;
+        console.log(this.state.currentUser.uid);
+        await firebase
+          .database()
+          .ref("wisdom")
+          .child(this.state.currentUser.uid)
+          .child(key)
+          .set({ title: title, detail: detail, category: "ideas" });
 
-      this.props.addBook({ title: title, detail: detail, category: "ideas" });
-      //this.props.toggleIsLoadingBooks(false);
+        this.props.addBook({ title: title, detail: detail, category: "ideas" });
+        //this.props.toggleIsLoadingBooks(false);
+      }
     } catch (error) {
       console.log(error);
       //this.props.toggleIsLoadingBooks(false);
@@ -118,12 +125,14 @@ class HomeScreen extends Component {
               onPress={() =>
                 this.setState(
                   {
-                    showInput: !this.state.showInput
+                    showInput: !this.state.showInput,
+                    showWisdoms: false
                   },
                   () => {
                     this.setState({
                       showIcons: !this.state.showIcons,
-                      showDeleteIcon: true
+                      showDeleteIcon: true,
+                      showAddIcon: true
                     });
                   }
                 )
@@ -178,42 +187,49 @@ class HomeScreen extends Component {
             </View>
           )}
         </View>
-        <View>
-          <TouchableOpacity>
-            <View style={styles.button}>
-              <Button
-                title="+"
-                style={styles.textStyle}
-                onPress={() =>
-                  this.addData(this.state.title, this.state.detail)
-                }
-              />
-            </View>
-          </TouchableOpacity>
-        </View>
-        {this.state.showDeleteIcon && (
+        {this.state.showAddIcon && (
           <View>
             <TouchableOpacity>
-              <View style={styles.button1}>
-                {/* <Ionicons
-                  name="ios-close-circle"
-                  size={10}
-                  style={styles.textStyle}
-                /> */}
+              <View style={styles.button}>
                 <Button
-                  title="X"
+                  title="+"
                   style={styles.textStyle}
                   onPress={() =>
-                    this.setState({
-                      showInput: false,
-                      showDeleteIcon: false,
-                      showIcons: true
-                    })
+                    this.addData(this.state.title, this.state.detail)
                   }
                 />
               </View>
             </TouchableOpacity>
           </View>
+        )}
+        {this.state.showWisdoms && (
+          <View>
+            {this.state.wisdom.length > 0
+              ? this.state.wisdom.map((item, index) => (
+                  <DisplayItems wisdom={item} key={index} />
+                ))
+              : null}
+          </View>
+        )}
+
+        {this.state.showDeleteIcon && (
+          <TouchableOpacity>
+            <View style={styles.button1}>
+              <Button
+                title="X"
+                style={styles.textStyle}
+                onPress={() =>
+                  this.setState({
+                    showInput: false,
+                    showDeleteIcon: false,
+                    showIcons: true,
+                    showWisdoms: true,
+                    showAddIcon: false
+                  })
+                }
+              />
+            </View>
+          </TouchableOpacity>
         )}
       </SafeAreaView>
     );
