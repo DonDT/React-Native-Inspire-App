@@ -7,7 +7,8 @@ import {
   SafeAreaView,
   Button,
   TouchableOpacity,
-  FlatList
+  FlatList,
+  ScrollView
 } from "react-native";
 import Goals from "./Goals";
 import Ideas from "./Ideas";
@@ -75,7 +76,9 @@ class HomeScreen extends Component {
       detail: "",
       showInput: false,
       showIcons: true,
-      showDeleteIcon: false
+      showDeleteIcon: false,
+      showAddIcon: false,
+      showWisdoms: true
     });
     this.textInputRef.setNativeProps({ title: "", detail: "" });
     console.log(title, detail);
@@ -210,16 +213,17 @@ class HomeScreen extends Component {
             </TouchableOpacity>
           </View>
         )}
-        {this.state.showWisdoms && (
-          <View>
-            {this.state.wisdom.length > 0
-              ? this.state.wisdom.map((item, index) => (
-                  <DisplayItems wisdom={item} key={index} />
-                ))
-              : null}
-          </View>
-        )}
-
+        <ScrollView>
+          {this.state.showWisdoms && (
+            <View>
+              {this.state.wisdom.length > 0
+                ? this.state.wisdom.map((item, index) => (
+                    <DisplayItems wisdom={item} key={index} index={index} />
+                  ))
+                : null}
+            </View>
+          )}
+        </ScrollView>
         {this.state.showDeleteIcon && (
           <TouchableOpacity>
             <View style={styles.button1}>
