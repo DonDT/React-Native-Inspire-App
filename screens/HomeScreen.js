@@ -66,6 +66,7 @@ class HomeScreen extends Component {
       currentUser: currentUserData.val(),
       wisdom: wisdoms
     });
+    // Update other sate events
   };
 
   addData = async (title, detail) => {
@@ -120,31 +121,38 @@ class HomeScreen extends Component {
         {this.state.showIcons && (
           <View style={styles.headerIcons}>
             <Ionicons
-              name="ios-brush"
-              size={25}
-              onPress={() =>
-                this.setState(
-                  {
-                    showInput: !this.state.showInput,
-                    showWisdoms: false
-                  },
-                  () => {
-                    this.setState({
-                      showIcons: !this.state.showIcons,
-                      showDeleteIcon: true,
-                      showAddIcon: true
-                    });
-                  }
-                )
-              }
-              style={{ marginRight: 15 }}
+              name="ios-list"
+              size={28}
+              styles={{ justifyContent: "flex-start" }}
             />
-            <Ionicons
-              name="ios-search"
-              size={25}
-              onPress={() => navigation.openDrawer()}
-              style={{ marginRight: 10 }}
-            />
+            <View style={{ justifyContent: "flex-end", flexDirection: "row" }}>
+              <Ionicons
+                name="ios-create"
+                size={28}
+                onPress={() =>
+                  this.setState(
+                    {
+                      showInput: !this.state.showInput,
+                      showWisdoms: false
+                    },
+                    () => {
+                      this.setState({
+                        showIcons: !this.state.showIcons,
+                        showDeleteIcon: true,
+                        showAddIcon: true
+                      });
+                    }
+                  )
+                }
+                style={{ marginRight: 15 }}
+              />
+              <Ionicons
+                name="ios-search"
+                size={28}
+                onPress={() => navigation.openDrawer()}
+                style={{ marginRight: 10 }}
+              />
+            </View>
           </View>
         )}
         <View style={styles.container}>
@@ -264,8 +272,9 @@ const styles = StyleSheet.create({
   headerIcons: {
     flexDirection: "row",
     //alignItems: "flex-end",
-    justifyContent: "flex-end",
-    marginTop: 10
+    justifyContent: "space-between",
+    marginTop: 10,
+    marginLeft: 10
   },
   button1: {
     width: 50,

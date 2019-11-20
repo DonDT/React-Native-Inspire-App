@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Text, StyleSheet, View, Image, TouchableOpacity } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 export default class DisplayItems extends Component {
   render() {
@@ -12,8 +13,11 @@ export default class DisplayItems extends Component {
           />
         </TouchableOpacity>
 
-        <View style={{ flex: 1, justifyContent: "center", paddingLeft: 5 }}>
-          <Text style={styles.titleText}>{this.props.wisdom.title}</Text>
+        <View style={styles.textSection}>
+          <View style={styles.titleAndIcon}>
+            <Text style={styles.titleText}>{this.props.wisdom.title}</Text>
+            <Ionicons name="ios-more" size={25} style={{ marginRight: 10 }} />
+          </View>
           <Text style={styles.textDetails}>{this.props.wisdom.detail}</Text>
         </View>
       </View>
@@ -26,7 +30,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    minHeight: 100,
+    minHeight: 90,
     marginVertical: 15
   },
   image: {
@@ -37,8 +41,19 @@ const styles = StyleSheet.create({
     borderRadius: 25
   },
   titleText: {
-    paddingTop: 0,
     fontSize: 18,
     marginBottom: 10
+  },
+  textSection: {
+    flex: 1,
+    justifyContent: "center",
+    paddingLeft: 5,
+    maxHeight: 90,
+    overflow: "hidden"
+  },
+  titleAndIcon: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingTop: 17
   }
 });
