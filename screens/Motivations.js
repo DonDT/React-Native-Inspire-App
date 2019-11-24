@@ -1,12 +1,25 @@
 import React, { Component } from "react";
-import { Text, StyleSheet, View } from "react-native";
+import { StyleSheet, View, ScrollView } from "react-native";
+import { connect } from "react-redux";
+import DisplayItems from "../components/DisplayItems";
 
 class HomeScreen extends Component {
   render() {
     return (
-      <View style={styles.container}>
-        <Text>Motivations Screen </Text>
-      </View>
+      <ScrollView>
+        <View style={styles.container}>
+          {this.props.motivations.length > 0
+            ? this.props.motivations.map((item, index) => (
+                <DisplayItems
+                  wisdom={item}
+                  key={index}
+                  index={index}
+                  showMoreIcon={false}
+                />
+              ))
+            : null}
+        </View>
+      </ScrollView>
     );
   }
 }
@@ -19,4 +32,10 @@ const styles = StyleSheet.create({
   }
 });
 
-export default HomeScreen;
+const mapStateToProps = state => {
+  return {
+    motivations: state.Wisdoms.motivations
+  };
+};
+
+export default connect(mapStateToProps)(HomeScreen);

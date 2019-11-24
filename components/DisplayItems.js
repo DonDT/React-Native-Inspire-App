@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Modal from "react-native-modal";
+import { connect } from "react-redux";
 
 class DisplayItems extends Component {
   state = {
@@ -17,6 +18,24 @@ class DisplayItems extends Component {
 
   toggleModal = () => {
     this.setState({ isModalVisible: !this.state.isModalVisible });
+  };
+
+  handleChange = (item, cat) => {
+    this.props.handleChangeCategory(item, cat);
+
+    switch (cat) {
+      case "ideas":
+        return this.props.changeToIdeas("ideas");
+      case "goals":
+        return this.props.changeToGoals("goals");
+      case "motivations":
+        return this.props.changeToMotivations("motivations");
+      case "ambitions":
+        return this.props.changeToAmbitions("ambitions");
+
+      default:
+        return cat;
+    }
   };
 
   render() {
@@ -32,12 +51,14 @@ class DisplayItems extends Component {
         <View style={styles.textSection}>
           <View style={styles.titleAndIcon}>
             <Text style={styles.titleText}>{this.props.wisdom.title}</Text>
-            <Ionicons
-              name="ios-more"
-              size={25}
-              style={{ marginRight: 10 }}
-              onPress={() => this.setState({ isModalVisible: true })}
-            />
+            {this.props.showMoreIcon && (
+              <Ionicons
+                name="ios-more"
+                size={25}
+                style={{ marginRight: 10 }}
+                onPress={() => this.setState({ isModalVisible: true })}
+              />
+            )}
             <Modal
               isVisible={this.state.isModalVisible}
               animationIn="fadeInRight"
@@ -74,8 +95,9 @@ class DisplayItems extends Component {
                     name="ios-home"
                     size={24}
                     color="#3432a8"
-                    onPress={() =>
-                      this.props.handleChangeCategory(this.props.wisdom, "home")
+                    onPress={
+                      () => this.handleChange(this.props.wisdom, "home")
+                      // this.props.handleChangeCategory(this.props.wisdom, "home")
                     }
                   />
                   <Ionicons
@@ -83,10 +105,7 @@ class DisplayItems extends Component {
                     size={24}
                     color="#3432a8"
                     onPress={() =>
-                      this.props.handleChangeCategory(
-                        this.props.wisdom,
-                        "ideas"
-                      )
+                      this.handleChange(this.props.wisdom, "ideas")
                     }
                   />
                   <Ionicons
@@ -94,10 +113,7 @@ class DisplayItems extends Component {
                     size={24}
                     color="#3432a8"
                     onPress={() =>
-                      this.props.handleChangeCategory(
-                        this.props.wisdom,
-                        "goals"
-                      )
+                      this.handleChange(this.props.wisdom, "goals")
                     }
                   />
                   <Ionicons
@@ -105,10 +121,7 @@ class DisplayItems extends Component {
                     size={24}
                     color="#3432a8"
                     onPress={() =>
-                      this.props.handleChangeCategory(
-                        this.props.wisdom,
-                        "motivations"
-                      )
+                      this.handleChange(this.props.wisdom, "motivations")
                     }
                   />
                   <Ionicons
@@ -116,10 +129,7 @@ class DisplayItems extends Component {
                     size={24}
                     color="#3432a8"
                     onPress={() =>
-                      this.props.handleChangeCategory(
-                        this.props.wisdom,
-                        "ambitions"
-                      )
+                      this.handleChange(this.props.wisdom, "ambitions")
                     }
                   />
                 </View>
@@ -168,4 +178,21 @@ const styles = StyleSheet.create({
   }
 });
 
-export default DisplayItems;
+const mapStateToProps = state => {
+  return {
+    Wisdom: state.Wisdom
+  };
+};
+
+const mapDispatchActionToProps = dispatch => {
+  return {
+    changeToIdeas: item => dispatch({ type: "CHANGE_TO_IDEAS", payload: item }),
+    changeToGoals: item => dispatch({ type: "CHANGE_TO_GOALS", payload: item }),
+    changeToMotivations: item =>
+      dispatch({ type: "CHANGE_TO_MOTIVATIONS", payload: item }),
+    changeToAmbitions: item =>
+      dispatch({ type: "CHANGE_TO_AMBITIONS", payload: item })
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchActionToProps)(DisplayItems);

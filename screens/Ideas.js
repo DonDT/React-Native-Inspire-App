@@ -1,16 +1,38 @@
 import React, { Component } from "react";
-import { Text, StyleSheet, View, Button } from "react-native";
+import {
+  Text,
+  StyleSheet,
+  View,
+  Button,
+  FlatList,
+  ScrollView
+} from "react-native";
+import DisplayItems from "../components/DisplayItems";
+import { connect } from "react-redux";
 
 class HomeScreen extends Component {
   render() {
     return (
-      <View style={styles.container}>
-        <Text>Ideas Screen </Text>
+      <ScrollView>
+        <View style={styles.container}>
+          {/* <Text>Ideas Screen </Text>
         <Button
           onPress={() => this.props.navigation.navigate("ItemScreen")}
           title="Item"
-        />
-      </View>
+        /> */}
+
+          {this.props.ideas.length > 0
+            ? this.props.ideas.map((item, index) => (
+                <DisplayItems
+                  wisdom={item}
+                  key={index}
+                  index={index}
+                  showMoreIcon={false}
+                />
+              ))
+            : null}
+        </View>
+      </ScrollView>
     );
   }
 }
@@ -23,4 +45,10 @@ const styles = StyleSheet.create({
   }
 });
 
-export default HomeScreen;
+const mapStateToProps = state => {
+  return {
+    ideas: state.Wisdoms.ideas
+  };
+};
+
+export default connect(mapStateToProps)(HomeScreen);

@@ -247,6 +247,7 @@ class HomeScreen extends Component {
                       key={index}
                       index={index}
                       handleChangeCategory={this.handleChangeCategory}
+                      showMoreIcon={true}
                     />
                   ))
                 : null}
