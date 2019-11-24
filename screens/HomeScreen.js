@@ -20,6 +20,7 @@ import "firebase/storage";
 import { Ionicons } from "@expo/vector-icons";
 import { dataToArray } from "../utils/helperURLs";
 import DisplayItems from "../components/DisplayItems";
+import { connect } from "react-redux";
 
 class HomeScreen extends Component {
   constructor(props) {
@@ -27,10 +28,10 @@ class HomeScreen extends Component {
     this.state = {
       title: "",
       detail: "",
-      goals: 0,
-      ideas: 0,
-      motivations: 0,
-      ambitions: 0,
+      goalsCount: 0,
+      ideasCount: 0,
+      motivationsCount: 0,
+      ambitionsCount: 0,
       wisdom: [],
       goals: [],
       ideas: [],
@@ -68,6 +69,8 @@ class HomeScreen extends Component {
       wisdom: wisdoms
     });
     // Update other sate events
+
+    this.props.loadWisdom(wisdoms.reverse());
   };
 
   addData = async (title, detail) => {
@@ -106,9 +109,14 @@ class HomeScreen extends Component {
           .ref("wisdom")
           .child(this.state.currentUser.uid)
           .child(key)
-          .set({ title: title, detail: detail, category: "ideas" });
+          .set({ title: title, detail: detail, category: "ideas", key: key });
 
-        this.props.addBook({ title: title, detail: detail, category: "ideas" });
+        this.props.addWisdom({
+          title: title,
+          detail: detail,
+          category: "home",
+          key: key
+        });
         //this.props.toggleIsLoadingBooks(false);
       }
     } catch (error) {
@@ -116,6 +124,22 @@ class HomeScreen extends Component {
       //this.props.toggleIsLoadingBooks(false);
     }
     //}
+  };
+
+  handleChangeCategory = async (wisdom, category) => {
+    try {
+      await firebase
+        .database()
+        .ref("wisdom")
+        .child(this.state.currentUser.uid)
+        .child(wisdom.key)
+        .update({ category: category });
+
+      //this.props.
+    } catch (error) {
+      console.log(error);
+    }
+    console.log(wisdom, category);
   };
 
   render() {
@@ -218,7 +242,12 @@ class HomeScreen extends Component {
             <View>
               {this.state.wisdom.length > 0
                 ? this.state.wisdom.map((item, index) => (
-                    <DisplayItems wisdom={item} key={index} index={index} />
+                    <DisplayItems
+                      wisdom={item}
+                      key={index}
+                      index={index}
+                      handleChangeCategory={this.handleChangeCategory}
+                    />
                   ))
                 : null}
             </View>
@@ -293,4 +322,23 @@ const styles = StyleSheet.create({
   }
 });
 
-export default HomeScreen;
+mapStateToProps = state => {
+  return {
+    Wisdoms: state.Wisdoms
+  };
+};
+
+mapDispatchToProps = dispatch => {
+  return {
+    loadWisdom: wisdom =>
+      dispatch({ type: "LOAD_ALL_ACTIONS_FROM_FIREBASE", payload: wisdom }),
+    addWisdom: wisdom =>
+      dispatch({
+        type: "ADD_WISDOM",
+        payload: wisdom
+      })
+    // changeCategory: category => dispatch({type: })
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);

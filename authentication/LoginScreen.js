@@ -1,19 +1,9 @@
 import React, { Component } from "react";
-import {
-  Text,
-  StyleSheet,
-  View,
-  TextInput,
-  ActivityIndicator,
-  Button
-} from "react-native";
+import { Text, StyleSheet, View, Button } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import FormInput from "../utils/forms/formInput";
 import ValidateForm from "../utils/forms/validateForm";
-import { connect } from "react-redux";
-import { signIn } from "../store/actions/users_actions";
-import { bindActionCreators } from "redux";
-import { setTokens } from "../utils/helperURLs";
+
 import * as firebase from "firebase/app";
 import "firebase/auth";
 import AuthCheckScreen from "../screens/AuthCheckScreen";
@@ -236,17 +226,4 @@ const styles = StyleSheet.create({
   }
 });
 
-function mapStateToProps(state) {
-  return {
-    User: state.User
-  };
-}
-
-function mapDispatchActionToProps(dispatch) {
-  return bindActionCreators({ signIn }, dispatch);
-}
-
-export default connect(
-  mapStateToProps,
-  mapDispatchActionToProps
-)(LoginScreen);
+export default LoginScreen;

@@ -1,8 +1,8 @@
 import { combineReducers } from "redux";
-import User from "./userReducer";
+import Wisdoms from "./wisdomReducer";
 
 const reducers = combineReducers({
-  User
+  Wisdoms
 });
 
 export default reducers;

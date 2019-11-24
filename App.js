@@ -81,51 +81,77 @@ const LoginRegisterStack = createStackNavigator(
   }
 );
 
-const MainBottomNavigation = createBottomTabNavigator({
-  HomeScreen: {
-    screen: HomeScreen,
-    navigationOptions: {
-      tabBarLabel: "Home",
-      tabBarIcon: ({}) => <Ionicons name="ios-home" size={24} color="#3432a8" />
-    }
-  },
-  Ideas: {
-    screen: Ideas,
-    navigationOptions: {
-      tabBarLabel: "Ideas",
-      headerBackTitle: "Home",
+const MainBottomNavigation = createBottomTabNavigator(
+  {
+    HomeScreen: {
+      screen: HomeScreen,
+      navigationOptions: {
+        tabBarLabel: "Home",
+        tabBarIcon: ({}) => (
+          <Ionicons name="ios-home" size={24} color="#3432a8" />
+        )
+      }
+    },
+    Ideas: {
+      screen: Ideas,
+      navigationOptions: {
+        tabBarLabel: "Ideas",
+        headerBackTitle: "Home",
 
-      tabBarIcon: ({}) => (
-        <Ionicons name="ios-thunderstorm" size={24} color="#3432a8" />
-      )
+        tabBarIcon: ({}) => (
+          <Ionicons name="ios-thunderstorm" size={24} color="#3432a8" />
+        )
+      }
+    },
+    Goals: {
+      screen: Goals,
+      navigationOptions: {
+        tabBarLabel: "Goals",
+        tabBarIcon: ({}) => (
+          <Ionicons name="ios-trending-up" size={24} color="#3432a8" />
+        )
+      }
+    },
+    Motivations: {
+      screen: Motivations,
+      navigationOptions: {
+        tabBarLabel: "Motivation",
+        tabBarIcon: ({}) => (
+          <Ionicons name="ios-walk" size={24} color="#3432a8" />
+        )
+      }
+    },
+    Ambitions: {
+      screen: Ambitions,
+      navigationOptions: {
+        tabBarLabel: "Ambitions",
+        tabBarIcon: ({}) => (
+          <Ionicons name="ios-trophy" size={24} color="#3432a8" />
+        )
+      }
     }
   },
-  Goals: {
-    screen: Goals,
-    navigationOptions: {
-      tabBarLabel: "Goals",
-      tabBarIcon: ({}) => (
-        <Ionicons name="ios-trending-up" size={24} color="#3432a8" />
-      )
-    }
-  },
-  Motivations: {
-    screen: Motivations,
-    navigationOptions: {
-      tabBarLabel: "Motivation",
-      tabBarIcon: ({}) => <Ionicons name="ios-walk" size={24} color="#3432a8" />
-    }
-  },
-  Ambitions: {
-    screen: Ambitions,
-    navigationOptions: {
-      tabBarLabel: "Ambitions",
-      tabBarIcon: ({}) => (
-        <Ionicons name="ios-trophy" size={24} color="#3432a8" />
-      )
-    }
+  {}
+);
+
+MainBottomNavigation.navigationOptions = ({ navigation }) => {
+  const { routeName } = navigation.state.routes[navigation.state.index];
+
+  switch (routeName) {
+    case "Home":
+      return { headerTitle: "Home" };
+    case "Ideas":
+      return { headerTitle: "Ideas" };
+    case "Goals":
+      return { headerTitle: "Goals" };
+    case "Motivations":
+      return { headerTitle: "Motivations" };
+    case "Ambitions":
+      return { headerTitle: "Ambitions" };
+    default:
+      return null;
   }
-});
+};
 
 const BottomStacknavigation = createStackNavigator({
   MainBottomNavigation: {

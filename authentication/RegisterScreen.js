@@ -1,17 +1,8 @@
 import React, { Component } from "react";
-import {
-  Text,
-  StyleSheet,
-  View,
-  TextInput,
-  ActivityIndicator,
-  Button
-} from "react-native";
+import { Text, StyleSheet, View, TextInput, Button } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import ValidateForm from "../utils/forms/validateForm";
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import { signUp } from "../store/actions/users_actions";
+
 import * as firebase from "firebase/app";
 import "firebase/auth";
 
@@ -266,17 +257,4 @@ const styles = StyleSheet.create({
   }
 });
 
-const mapStateToProps = state => {
-  return {
-    User: state.User
-  };
-};
-
-const mapDispatchActionToProps = dispatch => {
-  return bindActionCreators({ signUp }, dispatch);
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchActionToProps
-)(RegisterScreen);
+export default RegisterScreen;

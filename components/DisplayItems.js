@@ -70,11 +70,58 @@ class DisplayItems extends Component {
                     alignItems: "center"
                   }}
                 >
-                  <Ionicons name="ios-home" size={24} color="#3432a8" />
-                  <Ionicons name="ios-thunderstorm" size={24} color="#3432a8" />
-                  <Ionicons name="ios-trending-up" size={24} color="#3432a8" />
-                  <Ionicons name="ios-walk" size={24} color="#3432a8" />
-                  <Ionicons name="ios-trophy" size={24} color="#3432a8" />
+                  <Ionicons
+                    name="ios-home"
+                    size={24}
+                    color="#3432a8"
+                    onPress={() =>
+                      this.props.handleChangeCategory(this.props.wisdom, "home")
+                    }
+                  />
+                  <Ionicons
+                    name="ios-thunderstorm"
+                    size={24}
+                    color="#3432a8"
+                    onPress={() =>
+                      this.props.handleChangeCategory(
+                        this.props.wisdom,
+                        "ideas"
+                      )
+                    }
+                  />
+                  <Ionicons
+                    name="ios-trending-up"
+                    size={24}
+                    color="#3432a8"
+                    onPress={() =>
+                      this.props.handleChangeCategory(
+                        this.props.wisdom,
+                        "goals"
+                      )
+                    }
+                  />
+                  <Ionicons
+                    name="ios-walk"
+                    size={24}
+                    color="#3432a8"
+                    onPress={() =>
+                      this.props.handleChangeCategory(
+                        this.props.wisdom,
+                        "motivations"
+                      )
+                    }
+                  />
+                  <Ionicons
+                    name="ios-trophy"
+                    size={24}
+                    color="#3432a8"
+                    onPress={() =>
+                      this.props.handleChangeCategory(
+                        this.props.wisdom,
+                        "ambitions"
+                      )
+                    }
+                  />
                 </View>
                 <Button title="Close" onPress={() => this.toggleModal()} />
               </View>
