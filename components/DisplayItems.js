@@ -138,7 +138,7 @@ class DisplayItems extends Component {
             </Modal>
           </View>
 
-          <Text style={styles.textDetails}>{this.props.wisdom.detail}</Text>
+          <Text numberOfLines={3}>{this.props.wisdom.detail}</Text>
         </View>
       </View>
     );
@@ -151,7 +151,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     minHeight: 90,
-    marginVertical: 15
+    marginVertical: 10,
+    backgroundColor: "#E6E6FA",
+    borderRadius: 10,
+    padding: 10
   },
   image: {
     flex: 1,
@@ -162,19 +165,19 @@ const styles = StyleSheet.create({
   },
   titleText: {
     fontSize: 18,
-    marginBottom: 10
+    marginBottom: 7
   },
   textSection: {
     flex: 1,
     justifyContent: "center",
     paddingLeft: 5,
     maxHeight: 90,
-    overflow: "hidden"
+    paddingRight: 15
   },
   titleAndIcon: {
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingTop: 17
+    paddingTop: 5
   }
 });
 
