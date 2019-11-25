@@ -1,26 +1,24 @@
 import React, { Component } from "react";
 import {
-  Text,
   StyleSheet,
   View,
   TextInput,
   SafeAreaView,
   Button,
   TouchableOpacity,
-  FlatList,
-  ScrollView
+  ActivityIndicator,
+  ScrollView,
+  FlatList
 } from "react-native";
-import Goals from "./Goals";
-import Ideas from "./Ideas";
-import Motivation from "./Motivations";
-import Ambitions from "./Ambitions";
-import InputScreen from "./InputScreen";
 import * as firebase from "firebase";
 import "firebase/storage";
 import { Ionicons } from "@expo/vector-icons";
 import { dataToArray } from "../utils/helperURLs";
 import DisplayItems from "../components/DisplayItems";
+import Swipeout from "react-native-swipeout";
 import { connect } from "react-redux";
+import { compose } from "redux";
+import { connectActionSheet } from "@expo/react-native-action-sheet";
 
 class HomeScreen extends Component {
   constructor(props) {
@@ -71,6 +69,7 @@ class HomeScreen extends Component {
     // Update other sate events
 
     this.props.loadWisdom(wisdoms.reverse());
+    this.props.isLoading(false);
   };
 
   addData = async (title, detail) => {
@@ -140,6 +139,79 @@ class HomeScreen extends Component {
       console.log(error);
     }
     console.log(wisdom, category);
+  };
+
+  deleteItem = async (item, index) => {
+    try {
+      await firebase
+        .database()
+        .ref("wisdom")
+        .child(this.state.currentUser.uid)
+        .child(item.key)
+        .remove();
+
+      this.props.deleteItem(item);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  handleImagePress = item => {
+    const options = ["Select from photos", "Camera", "Cancel"];
+    const cancelButtonIndex = 2;
+
+    this.props.showActionSheetWithOptions(
+      {
+        options,
+        cancelButtonIndex
+      },
+      buttonIndex => {
+        // Do something here depending on the button index selected
+      }
+    );
+  };
+
+  renderItem = ({ item }, index) => {
+    let swipeOutButtons = [
+      {
+        text: "Delete",
+        component: (
+          <View
+            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+          >
+            <Ionicons name="ios-trash" size={24} colors="white" />
+          </View>
+        ),
+        backgroundColor: "#E6E6FA",
+        onPress: () => this.deleteItem(item, index)
+      }
+    ];
+
+    return (
+      <View>
+        <Swipeout
+          backgroundColor={"#E6E6FA"}
+          right={swipeOutButtons}
+          autoClose={true}
+          style={{
+            marginHorizontal: 5,
+            marginVertical: 5,
+            borderRadius: 10
+          }}
+          key={index}
+        >
+          <DisplayItems
+            wisdom={item}
+            key={index}
+            index={index}
+            handleChangeCategory={this.handleChangeCategory}
+            showMoreIcon={true}
+            editable={true}
+            handleImagePress={() => this.handleImagePress(item)}
+          />
+        </Swipeout>
+      </View>
+    );
   };
 
   render() {
@@ -240,17 +312,46 @@ class HomeScreen extends Component {
         <ScrollView>
           {this.state.showWisdoms && (
             <View>
-              {this.state.wisdom.length > 0
+              {/* {this.state.wisdom.length > 0
                 ? this.state.wisdom.map((item, index) => (
-                    <DisplayItems
-                      wisdom={item}
+                    <Swipeout
+                      backgroundColor={"#E6E6FA"}
+                      right={swipeOutButtons}
+                      autoClose={true}
+                      style={{
+                        marginHorizontal: 5,
+                        marginVertical: 5,
+                        borderRadius: 10
+                      }}
                       key={index}
-                      index={index}
-                      handleChangeCategory={this.handleChangeCategory}
-                      showMoreIcon={true}
-                    />
+                      
+                    >
+                      <DisplayItems
+                        wisdom={item}
+                        key={index}
+                        index={index}
+                        handleChangeCategory={this.handleChangeCategory}
+                        showMoreIcon={true}
+                        onPress={() => handleTrashIcon()}
+                      />
+                    </Swipeout>
                   ))
-                : null}
+                : null} */}
+
+              <FlatList
+                keyExtractor={(item, index) => index.toString()}
+                data={this.props.Wisdoms.wisdoms}
+                //renderItem={({ item }, index) => this.renderItem(item, index)}
+                //ListEmptyComponent="No Data To Display!"
+                renderItem={this.renderItem}
+                initialNumToRender={5}
+                maxToRenderPerBatch={10}
+                getItemLayout={(item, index) => ({
+                  length: 40,
+                  offset: 40 * index,
+                  index
+                })}
+              />
             </View>
           )}
         </ScrollView>
@@ -337,9 +438,15 @@ mapDispatchToProps = dispatch => {
       dispatch({
         type: "ADD_WISDOM",
         payload: wisdom
-      })
-    // changeCategory: category => dispatch({type: })
+      }),
+    isLoading: bool => dispatch({ type: "LOADING_DATA", payload: bool }),
+    deleteItem: item => dispatch({ type: "DELETE_ITEM", payload: item })
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);
+const wrapper = compose(
+  connect(mapStateToProps, mapDispatchToProps),
+  connectActionSheet
+);
+
+export default wrapper(HomeScreen);

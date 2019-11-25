@@ -8,16 +8,16 @@ class HomeScreen extends Component {
     return (
       <ScrollView>
         <View style={styles.container}>
-          {this.props.ambitions.length > 0
-            ? this.props.ambitions.map((item, index) => (
+          {this.props.ambitions.length === 0
+            ? "No Ambitions to Display"
+            : this.props.ambitions.map((item, index) => (
                 <DisplayItems
                   wisdom={item}
                   key={index}
                   index={index}
                   showMoreIcon={false}
                 />
-              ))
-            : null}
+              ))}
         </View>
       </ScrollView>
     );

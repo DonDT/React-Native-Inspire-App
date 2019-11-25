@@ -31,6 +31,7 @@ import reducers from "./store/reducers";
 import * as firebase from "firebase/app";
 import { firebaseConfig } from "./config/config";
 import AuthCheckScreen from "./screens/AuthCheckScreen";
+import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
@@ -53,7 +54,9 @@ class App extends Component {
     return (
       <Provider store={createStoreWithMiddleware}>
         <View style={styles.container}>
-          <AppContainer />
+          <ActionSheetProvider>
+            <AppContainer />
+          </ActionSheetProvider>
         </View>
       </Provider>
     );

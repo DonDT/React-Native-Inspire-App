@@ -3,7 +3,8 @@ const initialState = {
   goals: [],
   ideas: [],
   motivations: [],
-  ambitions: []
+  ambitions: [],
+  isLoading: true
 };
 
 const wisdoms = (state = initialState, action) => {
@@ -76,6 +77,25 @@ const wisdoms = (state = initialState, action) => {
 
         ambitions: state.wisdoms.filter(
           wisdom => wisdom.category === "ambitions"
+        )
+      };
+    case "LOADING_DATA":
+      return {
+        ...state,
+        isLoading: action.payload
+      };
+
+    case "DELETE_ITEM":
+      return {
+        wisdoms: state.wisdoms.filter(
+          wisdom => wisdom.title !== action.payload.title
+        ),
+        ideas: state.ideas.filter(idea => idea.title !== action.payload.title),
+        ambitions: state.ambitions.filter(
+          ambition => ambition.title !== action.payload.title
+        ),
+        motivations: state.motivations.filter(
+          motivation => motivation.title !== action.payload.title
         )
       };
 

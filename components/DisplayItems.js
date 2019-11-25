@@ -5,13 +5,14 @@ import {
   View,
   Image,
   TouchableOpacity,
-  Button
+  Button,
+  ActivityIndicator
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Modal from "react-native-modal";
 import { connect } from "react-redux";
 
-class DisplayItems extends Component {
+class DisplayItems extends React.PureComponent {
   state = {
     isModalVisible: false
   };
@@ -22,6 +23,7 @@ class DisplayItems extends Component {
 
   handleChange = (item, cat) => {
     this.props.handleChangeCategory(item, cat);
+    this.toggleModal();
 
     switch (cat) {
       case "ideas":
@@ -41,7 +43,10 @@ class DisplayItems extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => this.props.handleImagePress()}
+          disabled={!this.props.editable}
+        >
           <Image
             source={require("../assets/rose-blue-flower.jpeg")}
             style={styles.image}
@@ -63,7 +68,6 @@ class DisplayItems extends Component {
               isVisible={this.state.isModalVisible}
               animationIn="fadeInRight"
               animationOut="fadeOutRight"
-              animationOutTiming={500}
             >
               <View
                 style={{
@@ -95,10 +99,7 @@ class DisplayItems extends Component {
                     name="ios-home"
                     size={24}
                     color="#3432a8"
-                    onPress={
-                      () => this.handleChange(this.props.wisdom, "home")
-                      // this.props.handleChangeCategory(this.props.wisdom, "home")
-                    }
+                    onPress={() => this.handleChange(this.props.wisdom, "home")}
                   />
                   <Ionicons
                     name="ios-thunderstorm"
