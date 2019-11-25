@@ -4,7 +4,8 @@ const initialState = {
   ideas: [],
   motivations: [],
   ambitions: [],
-  isLoading: true
+  isLoading: true,
+  image: null
 };
 
 const wisdoms = (state = initialState, action) => {
@@ -97,6 +98,56 @@ const wisdoms = (state = initialState, action) => {
         motivations: state.motivations.filter(
           motivation => motivation.title !== action.payload.title
         )
+      };
+
+    case "UPDATE_IMAGE":
+      return {
+        ...state,
+        wisdoms: state.wisdoms.map(wisdom => {
+          if (wisdom.title == action.payload.title) {
+            return {
+              ...wisdom,
+              image: action.payload.uri
+            };
+          }
+          return wisdom;
+        }),
+        goals: state.goals.map(goal => {
+          if (goal.title == action.payload.title) {
+            return {
+              ...goal,
+              image: action.payload.uri
+            };
+          }
+          return goal;
+        }),
+        ideas: state.ideas.map(idea => {
+          if (idea.title == action.payload.title) {
+            return {
+              ...idea,
+              image: action.payload.uri
+            };
+          }
+          return idea;
+        }),
+        motivations: state.motivations.map(motivation => {
+          if (motivation.title == action.payload.title) {
+            return {
+              ...motivation,
+              image: action.payload.uri
+            };
+          }
+          return motivation;
+        }),
+        ambitions: state.ambitions.map(ambition => {
+          if (ambition.title == action.payload.title) {
+            return {
+              ...ambition,
+              image: action.payload.uri
+            };
+          }
+          return ambition;
+        })
       };
 
     default:

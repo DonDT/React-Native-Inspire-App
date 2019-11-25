@@ -19,6 +19,8 @@ import Swipeout from "react-native-swipeout";
 import { connect } from "react-redux";
 import { compose } from "redux";
 import { connectActionSheet } from "@expo/react-native-action-sheet";
+import * as ImageHandler from "../utils/handleImageFunction";
+import "firebase/storage";
 
 class HomeScreen extends Component {
   constructor(props) {
@@ -156,6 +158,58 @@ class HomeScreen extends Component {
     }
   };
 
+  uploadImage = async (image, item) => {
+    const ref = firebase
+      .storage()
+      .ref("wisdom")
+      .child(this.state.currentUser.uid)
+      .child(item.key);
+
+    try {
+      console.log("AA");
+      const blob = await ImageHandler.prepareBlob(image.uri);
+      console.log("A");
+      const snapshot = await ref.putString(blob);
+      console.log("B");
+      let downloadUrl = await snapshot.ref.getDownloadURL();
+      console.log("C");
+      await firebase
+        .database()
+        .ref("wisdom")
+        .child(this.state.currentUser.uid)
+        .child(item.key)
+        .update({ image: downloadUrl });
+      console.log("D");
+
+      blob.close();
+
+      return downloadUrl;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  openImages = async item => {
+    const result = await ImageHandler.openImages();
+
+    if (result) {
+      const downloadUrl = await this.uploadImage(result, item);
+
+      this.props.updateImage({ ...item, uri: downloadUrl });
+    }
+  };
+
+  openCamera = async item => {
+    const result = await ImageHandler.openCamera();
+
+    if (result) {
+      const downloadUrl = await this.uploadImage(result, item);
+      this.props.updateImage({ ...item, uri: downloadUrl });
+
+      //this.props.updateBookImage({ ...item, uri: downloadUrl });
+    }
+  };
+
   handleImagePress = item => {
     const options = ["Select from photos", "Camera", "Cancel"];
     const cancelButtonIndex = 2;
@@ -167,6 +221,11 @@ class HomeScreen extends Component {
       },
       buttonIndex => {
         // Do something here depending on the button index selected
+        if (buttonIndex === 0) {
+          this.openImages(item);
+        } else if (buttonIndex === 1) {
+          this.openCamera(item);
+        }
       }
     );
   };
@@ -440,7 +499,8 @@ mapDispatchToProps = dispatch => {
         payload: wisdom
       }),
     isLoading: bool => dispatch({ type: "LOADING_DATA", payload: bool }),
-    deleteItem: item => dispatch({ type: "DELETE_ITEM", payload: item })
+    deleteItem: item => dispatch({ type: "DELETE_ITEM", payload: item }),
+    updateImage: image => dispatch({ type: "UPDATE_IMAGE", payload: image })
   };
 };
 

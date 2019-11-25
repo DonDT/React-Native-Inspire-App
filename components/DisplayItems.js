@@ -47,10 +47,17 @@ class DisplayItems extends React.PureComponent {
           onPress={() => this.props.handleImagePress()}
           disabled={!this.props.editable}
         >
-          <Image
-            source={require("../assets/rose-blue-flower.jpeg")}
-            style={styles.image}
-          />
+          {this.props.wisdom.image ? (
+            <Image
+              sourec={{ uri: this.props.wisdom.image }}
+              style={styles.image}
+            />
+          ) : (
+            <Image
+              source={require("../assets/rose-blue-flower.jpeg")}
+              style={styles.image}
+            />
+          )}
         </TouchableOpacity>
 
         <View style={styles.textSection}>
