@@ -270,6 +270,7 @@ class HomeScreen extends Component {
             showMoreIcon={true}
             editable={true}
             handleImagePress={this.handleImagePress}
+            navigation={this.props.navigation}
           />
         </Swipeout>
       </View>

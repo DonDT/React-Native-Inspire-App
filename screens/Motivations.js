@@ -16,6 +16,7 @@ class HomeScreen extends Component {
                   key={index}
                   index={index}
                   showMoreIcon={false}
+                  navigation={this.props.navigation}
                 />
               ))}
         </View>

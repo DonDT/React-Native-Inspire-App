@@ -13,6 +13,7 @@ import Modal from "react-native-modal";
 import { connect } from "react-redux";
 import ImageProgress from "react-native-image-progress";
 import ProgressPie from "react-native-progress/Pie";
+//import {withRouter} from 'react-dom'
 
 class DisplayItems extends React.PureComponent {
   state = {
@@ -73,6 +74,18 @@ class DisplayItems extends React.PureComponent {
         <View style={styles.textSection}>
           <View style={styles.titleAndIcon}>
             <Text style={styles.titleText}>{this.props.wisdom.title}</Text>
+            <View style={styles.viewText}>
+              <Text
+                style={styles.viewButton}
+                onPress={() =>
+                  this.props.navigation.navigate("ItemScreen", {
+                    wisdom: this.props
+                  })
+                }
+              >
+                View
+              </Text>
+            </View>
             {this.props.showMoreIcon && (
               <Ionicons
                 name="ios-more"
@@ -196,6 +209,18 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     paddingTop: 5
+  },
+  viewButton: {
+    fontSize: 15,
+
+    padding: 5
+  },
+  viewText: {
+    marginLeft: 5,
+    borderRadius: 15,
+    borderWidth: 1,
+    borderColor: "blue",
+    backgroundColor: "pink"
   }
 });
 

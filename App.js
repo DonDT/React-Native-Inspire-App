@@ -192,6 +192,7 @@ const AppDrawerNavigation = createDrawerNavigator(
       screen: BottomStacknavigation,
       navigationOptions: {
         title: "Home",
+
         drawerIcon: () => <Ionicons name="ios-home" size={24} />
       }
     },
