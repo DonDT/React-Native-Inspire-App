@@ -41,49 +41,44 @@ export const openCamera = async () => {
   }
 };
 
-export const prepareBlob = async imageUri => {
+// export const prepareBlob = async imageUri => {
+//   const blob = await new Promise((resolve, reject) => {
+//     // request
+//     const xml = new XMLHttpRequest();
+//     // if success, resolve it
+//     xml.onload = function() {
+//       resolve(xml.response);
+//     };
+
+//     //if error, throw new error
+//     xml.onerror = function() {
+//       //console.log(e);
+//       reject(new TypeError("Image Upload Failed"));
+//     };
+
+//     // set the response type
+//     xml.responseTpye = "blob";
+//     xml.open("GET", imageUri, true);
+//     // the request is sent
+//     xml.send();
+//   });
+
+//   return blob;
+// };
+
+export const prepareBlob = async uri => {
   const blob = await new Promise((resolve, reject) => {
-    // request
-    const xml = new XMLHttpRequest();
-    // if success, resolve it
-    xml.onload = () => {
-      resolve(xml.response);
+    const xhr = new XMLHttpRequest();
+    xhr.onload = function() {
+      resolve(xhr.response);
     };
 
-    //if error, throw new error
-    xml.onerror = function(e) {
-      console.log(e);
-      reject(new TypeError("Image Upload Failed"));
+    xhr.onerror = function() {
+      reject(new TypeError("Network request failed"));
     };
-
-    // set the response type
-    xml.responseTpye = "blob";
-    xml.open("GET", imageUri, true);
-    // the request is sent
-    xml.send();
+    xhr.responseType = "blob";
+    xhr.open("GET", uri, true);
+    xhr.send();
   });
-
   return blob;
 };
-
-// export const uploadImageToFirebase = async (uri, userUID) => {
-
-//     const blob = await new Promise((resolve, reject) => {
-//         const xhr = new XMLHttpRequest();
-//         xhr.onload = () => {
-//             resolve(xhr.response);
-//         };
-//         xhr.responseType = 'blob';
-//         xhr.open('GET', uri, true);
-//         xhr.send(null);
-//     });
-
-//     const ref = firebase
-//         .storage()
-//         .ref()
-//         .child(`userImages/${userUID}`);
-
-//     let snapshot = await ref.put(blob);
-
-//     return await snapshot.ref.getDownloadURL();
-// };

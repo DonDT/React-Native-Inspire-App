@@ -11,6 +11,8 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import Modal from "react-native-modal";
 import { connect } from "react-redux";
+import ImageProgress from "react-native-image-progress";
+import ProgressPie from "react-native-progress/Pie";
 
 class DisplayItems extends React.PureComponent {
   state = {
@@ -44,13 +46,21 @@ class DisplayItems extends React.PureComponent {
     return (
       <View style={styles.container}>
         <TouchableOpacity
-          onPress={() => this.props.handleImagePress()}
+          onPress={() => this.props.handleImagePress(this.props.wisdom)}
           disabled={!this.props.editable}
         >
           {this.props.wisdom.image ? (
-            <Image
-              sourec={{ uri: this.props.wisdom.image }}
+            <ImageProgress
+              source={{ uri: this.props.wisdom.image }}
               style={styles.image}
+              indicator={ProgressPie}
+              indicatorProps={{
+                size: 40,
+                borderWidth: 0,
+                color: "#E6E6FA",
+                unfilledColor: "white"
+              }}
+              imageStyle={{ borderRadius: 25 }}
             />
           ) : (
             <Image

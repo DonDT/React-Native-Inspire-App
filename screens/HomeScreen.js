@@ -169,9 +169,11 @@ class HomeScreen extends Component {
       console.log("AA");
       const blob = await ImageHandler.prepareBlob(image.uri);
       console.log("A");
-      const snapshot = await ref.putString(blob);
-      console.log("B");
+      //const snapshot = await ref.putString(blob);
+      const snapshot = await ref.put(blob);
       let downloadUrl = await snapshot.ref.getDownloadURL();
+      console.log("B");
+
       console.log("C");
       await firebase
         .database()
@@ -180,6 +182,7 @@ class HomeScreen extends Component {
         .child(item.key)
         .update({ image: downloadUrl });
       console.log("D");
+      console.log(downloadUrl);
 
       blob.close();
 
@@ -213,7 +216,7 @@ class HomeScreen extends Component {
   handleImagePress = item => {
     const options = ["Select from photos", "Camera", "Cancel"];
     const cancelButtonIndex = 2;
-
+    console.log(item);
     this.props.showActionSheetWithOptions(
       {
         options,
@@ -266,7 +269,7 @@ class HomeScreen extends Component {
             handleChangeCategory={this.handleChangeCategory}
             showMoreIcon={true}
             editable={true}
-            handleImagePress={() => this.handleImagePress(item)}
+            handleImagePress={this.handleImagePress}
           />
         </Swipeout>
       </View>
