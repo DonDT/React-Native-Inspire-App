@@ -19,6 +19,9 @@ const SettingsScreen = props => {
       <View style={styles.signOutButton}>
         <Button title="Log Out" onPress={() => signOut()} color="gold" />
       </View>
+      <View style={styles.logOutText}>
+        <Text>Click on Home in side drawer to return to home.</Text>
+      </View>
     </View>
   );
 };
@@ -35,6 +38,9 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderColor: "gold",
     borderRadius: 15
+  },
+  logOutText: {
+    marginTop: 20
   }
 });
 

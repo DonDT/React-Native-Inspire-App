@@ -9,9 +9,17 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { DrawerNavigatorItems } from "react-navigation-drawer";
+import { NavigationActions } from "react-navigation";
 import { connect } from "react-redux";
 
 class CustomDrawerLogo extends Component {
+  navigateToHomeScreen = route => {
+    const navigationAction = NavigationActions.navigate({
+      routeName: route
+    });
+    this.props.navigation.dispatch(navigationAction);
+  };
+
   render() {
     return (
       <ScrollView>
@@ -28,7 +36,12 @@ class CustomDrawerLogo extends Component {
                 style={{ margin: 20, color: "#3432a8" }}
               />
 
-              <Text style={{ marginTop: 25, marginLeft: 15 }}>Home</Text>
+              <Text
+                style={{ marginTop: 25, marginLeft: 15, color: "#3432a8" }}
+                onPress={() => this.navigateToHomeScreen("HomeScreen")}
+              >
+                Home
+              </Text>
             </View>
             <View style={styles.rightDisplay}>
               <Text style={{ color: "white" }}>
@@ -109,6 +122,7 @@ class CustomDrawerLogo extends Component {
 
 const styles = StyleSheet.create({
   Container: {
+    flex: 1,
     height: 175,
     alignItems: "center",
     justifyContent: "center",

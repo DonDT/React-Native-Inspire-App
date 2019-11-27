@@ -185,20 +185,19 @@ const BottomStacknavigation = createStackNavigator({
 
 const AppDrawerNavigation = createDrawerNavigator(
   {
+    SettingsScreen: {
+      screen: SettingsScreen,
+      navigationOptions: {
+        title: "Settings",
+        drawerIcon: () => <Ionicons name="ios-settings" size={24} />
+      }
+    },
     BottomStacknavigation: {
       screen: BottomStacknavigation,
       navigationOptions: {
-        title: ""
+        title: "Close"
       }
     }
-
-    // SettingsScreen: {
-    //   screen: SettingsScreen,
-    //   navigationOptions: {
-    //     title: "Settings",
-    //     drawerIcon: () => <Ionicons name="ios-settings" size={24} />
-    //   }
-    // }
   },
   {
     contentComponent: CustomDrawerLogo

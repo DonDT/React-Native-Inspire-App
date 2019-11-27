@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { StyleSheet, View, ScrollView } from "react-native";
+import { StyleSheet, View, ScrollView, Text } from "react-native";
 import { connect } from "react-redux";
 import DisplayItems from "../components/DisplayItems";
 
@@ -8,7 +8,11 @@ class HomeScreen extends Component {
     return (
       <ScrollView>
         <View style={styles.container}>
-          {this.props.goals.length &&
+          {this.props.goals.length === 0 ? (
+            <View styles={styles.noItemStyle}>
+              <Text>No Goals to display yet</Text>
+            </View>
+          ) : (
             this.props.goals.map((item, index) => (
               <DisplayItems
                 wisdom={item}
@@ -17,7 +21,8 @@ class HomeScreen extends Component {
                 showMoreIcon={false}
                 navigation={this.props.navigation}
               />
-            ))}
+            ))
+          )}
         </View>
       </ScrollView>
     );
@@ -27,6 +32,10 @@ class HomeScreen extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  noItemStyle: {
     alignItems: "center",
     justifyContent: "center"
   }
