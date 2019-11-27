@@ -1,12 +1,5 @@
 import React, { Component } from "react";
-import {
-  Text,
-  StyleSheet,
-  View,
-  Button,
-  FlatList,
-  ScrollView
-} from "react-native";
+import { StyleSheet, View, ScrollView } from "react-native";
 import DisplayItems from "../components/DisplayItems";
 import { connect } from "react-redux";
 
@@ -15,12 +8,6 @@ class HomeScreen extends Component {
     return (
       <ScrollView>
         <View style={styles.container}>
-          {/* <Text>Ideas Screen </Text>
-        <Button
-          onPress={() => this.props.navigation.navigate("ItemScreen")}
-          title="Item"
-        /> */}
-
           {this.props.ideas.length > 0
             ? this.props.ideas.map((item, index) => (
                 <DisplayItems

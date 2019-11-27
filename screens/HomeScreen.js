@@ -42,7 +42,9 @@ class HomeScreen extends Component {
       showDeleteIcon: false,
       showWisdoms: true,
       currentUser: {},
-      showAddIcon: false
+      showAddIcon: false,
+      searchTerm: "",
+      searchedItems: []
     };
   }
 
@@ -74,6 +76,17 @@ class HomeScreen extends Component {
     this.props.isLoading(false);
   };
 
+  componentDidUpdate() {
+    if (
+      this.state.searchTerm.trim() === "" &&
+      this.state.searchedItems.length > 0
+    ) {
+      this.setState({
+        searchedItems: []
+      });
+    }
+  }
+
   addData = async (title, detail) => {
     this.setState({
       title: "",
@@ -82,7 +95,8 @@ class HomeScreen extends Component {
       showIcons: true,
       showDeleteIcon: false,
       showAddIcon: false,
-      showWisdoms: true
+      showWisdoms: true,
+      showSearchInput: false
     });
     this.textInputRef.setNativeProps({ title: "", detail: "" });
     console.log(title, detail);
@@ -166,23 +180,17 @@ class HomeScreen extends Component {
       .child(item.key);
 
     try {
-      console.log("AA");
       const blob = await ImageHandler.prepareBlob(image.uri);
-      console.log("A");
       //const snapshot = await ref.putString(blob);
       const snapshot = await ref.put(blob);
       let downloadUrl = await snapshot.ref.getDownloadURL();
-      console.log("B");
 
-      console.log("C");
       await firebase
         .database()
         .ref("wisdom")
         .child(this.state.currentUser.uid)
         .child(item.key)
         .update({ image: downloadUrl });
-      console.log("D");
-      console.log(downloadUrl);
 
       blob.close();
 
@@ -277,20 +285,73 @@ class HomeScreen extends Component {
     );
   };
 
+  handleSearchData = () => {
+    const itemsToDisplay = this.props.Wisdoms.wisdoms.filter(
+      wisdom => wisdom.title === this.state.searchTerm
+    );
+    this.setState({
+      searchedItems: [...this.state.searchedItems, itemsToDisplay]
+    });
+  };
+
   render() {
+    //console.log(this.state.searchTerm);
     return (
       <SafeAreaView>
+        {this.state.showSearchInput && (
+          <View style={styles.searchView}>
+            <TextInput
+              autoCapitalize={"none"}
+              placeholder="Enter search term "
+              placeholderTextColor="gold"
+              name="search"
+              autoComplete={false}
+              autoCorrect={false}
+              spellCheck={false}
+              style={[
+                styles.textInput,
+                {
+                  marginTop: 20,
+                  borderBottomColor: "gold",
+                  borderBottomWidth: 0.8,
+                  height: 30
+                  //paddingBottom: 1
+                }
+              ]}
+              onChangeText={value =>
+                this.setState({ searchTerm: value }, () => {
+                  this.handleSearchData;
+                })
+              }
+              ref={component => {
+                this.textInputRef = component;
+              }}
+            />
+            <Ionicons
+              name="ios-send"
+              size={25}
+              color={"gold"}
+              onPress={() => this.handleSearchData()}
+              style={{ marginTop: 20 }}
+            />
+            <Ionicons
+              name="ios-close"
+              size={32}
+              color={"gold"}
+              onPress={() =>
+                this.setState({ showSearchInput: false, showIcons: true })
+              }
+              style={{ marginTop: 20 }}
+            />
+          </View>
+        )}
         {this.state.showIcons && (
           <View style={styles.headerIcons}>
-            <Ionicons
-              name="ios-list"
-              size={28}
-              styles={{ justifyContent: "flex-start" }}
-            />
             <View style={{ justifyContent: "flex-end", flexDirection: "row" }}>
               <Ionicons
                 name="ios-create"
                 size={28}
+                color={"gold"}
                 onPress={() =>
                   this.setState(
                     {
@@ -310,9 +371,12 @@ class HomeScreen extends Component {
               />
               <Ionicons
                 name="ios-search"
+                color={"gold"}
                 size={28}
-                onPress={() => navigation.openDrawer()}
                 style={{ marginRight: 10 }}
+                onPress={() =>
+                  this.setState({ showSearchInput: true, showIcons: false })
+                }
               />
             </View>
           </View>
@@ -335,6 +399,9 @@ class HomeScreen extends Component {
                 placeholder="Title "
                 placeholderTextColor="gold"
                 name="title"
+                autoComplete={false}
+                autoCorrect={false}
+                spellCheck={false}
                 onChangeText={value => this.setState({ title: value })}
                 ref={component => {
                   this.textInputRef = component;
@@ -350,6 +417,9 @@ class HomeScreen extends Component {
                 editable
                 numberOfLines={10}
                 onChangeText={value => this.setState({ detail: value })}
+                autoComplete={false}
+                autoCorrect={false}
+                spellCheck={false}
                 ref={component => {
                   this.textInputRef = component;
                 }}
@@ -375,35 +445,13 @@ class HomeScreen extends Component {
         <ScrollView>
           {this.state.showWisdoms && (
             <View>
-              {/* {this.state.wisdom.length > 0
-                ? this.state.wisdom.map((item, index) => (
-                    <Swipeout
-                      backgroundColor={"#E6E6FA"}
-                      right={swipeOutButtons}
-                      autoClose={true}
-                      style={{
-                        marginHorizontal: 5,
-                        marginVertical: 5,
-                        borderRadius: 10
-                      }}
-                      key={index}
-                      
-                    >
-                      <DisplayItems
-                        wisdom={item}
-                        key={index}
-                        index={index}
-                        handleChangeCategory={this.handleChangeCategory}
-                        showMoreIcon={true}
-                        onPress={() => handleTrashIcon()}
-                      />
-                    </Swipeout>
-                  ))
-                : null} */}
-
               <FlatList
                 keyExtractor={(item, index) => index.toString()}
-                data={this.props.Wisdoms.wisdoms}
+                data={
+                  this.state.searchTerm.trim() !== ""
+                    ? this.state.searchedItems[0]
+                    : this.props.Wisdoms.wisdoms
+                }
                 //renderItem={({ item }, index) => this.renderItem(item, index)}
                 //ListEmptyComponent="No Data To Display!"
                 renderItem={this.renderItem}
@@ -448,11 +496,13 @@ const styles = StyleSheet.create({
   },
   textInput: {
     flexDirection: "row",
-    width: "100%",
+    width: "70%",
     fontSize: 15,
     paddingLeft: 4
   },
-  inputContainer: {},
+  inputContainer: {
+    alignItems: "center"
+  },
   button: {
     width: 50,
     height: 50,
@@ -469,8 +519,8 @@ const styles = StyleSheet.create({
   },
   headerIcons: {
     flexDirection: "row",
-    //alignItems: "flex-end",
-    justifyContent: "space-between",
+    alignItems: "center",
+    justifyContent: "flex-end",
     marginTop: 10,
     marginLeft: 10
   },
@@ -484,6 +534,12 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 20,
     top: 500
+  },
+  searchView: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-around",
+    marginBottom: 20
   }
 });
 

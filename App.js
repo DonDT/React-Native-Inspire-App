@@ -15,9 +15,6 @@ import Goals from "./screens/Goals";
 import Ambitions from "./screens/Ambitions";
 import Ideas from "./screens/Ideas";
 import Motivations from "./screens/Motivations";
-import Profile from "./screens/Profile";
-import News from "./screens/News";
-import LifeStyle from "./screens/LifeStyle";
 import ItemScreen from "./screens/ItemScreen";
 import InputScreen from "./screens/InputScreen";
 
@@ -191,41 +188,17 @@ const AppDrawerNavigation = createDrawerNavigator(
     BottomStacknavigation: {
       screen: BottomStacknavigation,
       navigationOptions: {
-        title: "Home",
-
-        drawerIcon: () => <Ionicons name="ios-home" size={24} />
-      }
-    },
-
-    Profile: {
-      screen: Profile,
-      navigationOptions: {
-        title: "Profile",
-        headerBackTitle: "Home",
-        drawerIcon: () => <Ionicons name="ios-happy" size={24} />
-      }
-    },
-    News: {
-      screen: News,
-      navigationOptions: {
-        title: "News",
-        drawerIcon: () => <Ionicons name="ios-chatboxes" size={24} />
-      }
-    },
-    LifeStyle: {
-      screen: LifeStyle,
-      navigationOptions: {
-        title: "LifeStyle",
-        drawerIcon: () => <Ionicons name="ios-contacts" size={24} />
-      }
-    },
-    SettingsScreen: {
-      screen: SettingsScreen,
-      navigationOptions: {
-        title: "Settings",
-        drawerIcon: () => <Ionicons name="ios-settings" size={24} />
+        title: ""
       }
     }
+
+    // SettingsScreen: {
+    //   screen: SettingsScreen,
+    //   navigationOptions: {
+    //     title: "Settings",
+    //     drawerIcon: () => <Ionicons name="ios-settings" size={24} />
+    //   }
+    // }
   },
   {
     contentComponent: CustomDrawerLogo
