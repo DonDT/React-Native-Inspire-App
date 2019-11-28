@@ -28,15 +28,8 @@ class HomeScreen extends Component {
     this.state = {
       title: "",
       detail: "",
-      goalsCount: 0,
-      ideasCount: 0,
-      motivationsCount: 0,
-      ambitionsCount: 0,
       wisdom: [],
-      goals: [],
-      ideas: [],
-      motivations: [],
-      ambitions: [],
+      isLoadingData: false,
       showInput: false,
       showIcons: true,
       showDeleteIcon: false,
@@ -99,9 +92,9 @@ class HomeScreen extends Component {
       showSearchInput: false
     });
     this.textInputRef.setNativeProps({ title: "", detail: "" });
-    console.log(title, detail);
+
     // Checking if data already exist before adding to database.
-    //this.props.toggleIsLoadingBooks(true);
+    this.setState({ isLoadingData: true });
     try {
       const snapshot = await firebase
         .database()
@@ -111,14 +104,14 @@ class HomeScreen extends Component {
         .equalTo(title)
         .once("value");
       if (snapshot.exists()) {
-        alert("Unable to add as book already exists");
+        alert("Unable to add, as book already exists");
       } else {
         const key = await firebase
           .database()
           .ref("wisdom")
           .child(this.state.currentUser.uid)
           .push().key;
-        console.log(this.state.currentUser.uid);
+        //console.log(this.state.currentUser.uid);
         await firebase
           .database()
           .ref("wisdom")
@@ -132,7 +125,9 @@ class HomeScreen extends Component {
           category: "home",
           key: key
         });
-        //this.props.toggleIsLoadingBooks(false);
+        this.setState({
+          isLoadingData: false
+        });
       }
     } catch (error) {
       console.log(error);
@@ -142,6 +137,9 @@ class HomeScreen extends Component {
   };
 
   handleChangeCategory = async (wisdom, category) => {
+    this.setState({
+      isLoadingData: true
+    });
     try {
       await firebase
         .database()
@@ -150,14 +148,18 @@ class HomeScreen extends Component {
         .child(wisdom.key)
         .update({ category: category });
 
-      //this.props.
+      this.setState({ isLoadingData: false });
+      //this.props.navigation.navigate({ category });
     } catch (error) {
       console.log(error);
     }
-    console.log(wisdom, category);
+    //console.log(wisdom, category);
   };
 
   deleteItem = async (item, index) => {
+    this.setState({
+      isLoadingData: true
+    });
     try {
       await firebase
         .database()
@@ -167,6 +169,8 @@ class HomeScreen extends Component {
         .remove();
 
       this.props.deleteItem(item);
+
+      this.setState({ isLoadingData: false });
     } catch (error) {
       console.log(error);
     }
@@ -259,28 +263,46 @@ class HomeScreen extends Component {
 
     return (
       <View>
-        <Swipeout
-          backgroundColor={"#E6E6FA"}
-          right={swipeOutButtons}
-          autoClose={true}
-          style={{
-            marginHorizontal: 5,
-            marginVertical: 5,
-            borderRadius: 10
-          }}
-          key={index}
-        >
-          <DisplayItems
-            wisdom={item}
+        {this.state.isLoadingData ? (
+          <View
+            style={[
+              StyleSheet.absoluteFill,
+              {
+                alignItems: "center",
+                justifyContent: "center",
+                zIndex: 700,
+                elevation: 700,
+                flex: 1
+              }
+            ]}
+          >
+            <ActivityIndicator size="large" color={"#3432a8"} />
+          </View>
+        ) : null}
+        <View>
+          <Swipeout
+            backgroundColor={"#E6E6FA"}
+            right={swipeOutButtons}
+            autoClose={true}
+            style={{
+              marginHorizontal: 5,
+              marginVertical: 5,
+              borderRadius: 10
+            }}
             key={index}
-            index={index}
-            handleChangeCategory={this.handleChangeCategory}
-            showMoreIcon={true}
-            editable={true}
-            handleImagePress={this.handleImagePress}
-            navigation={this.props.navigation}
-          />
-        </Swipeout>
+          >
+            <DisplayItems
+              wisdom={item}
+              key={index}
+              index={index}
+              handleChangeCategory={this.handleChangeCategory}
+              showMoreIcon={true}
+              editable={true}
+              handleImagePress={this.handleImagePress}
+              navigation={this.props.navigation}
+            />
+          </Swipeout>
+        </View>
       </View>
     );
   };

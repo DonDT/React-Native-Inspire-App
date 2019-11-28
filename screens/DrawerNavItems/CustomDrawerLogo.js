@@ -77,7 +77,8 @@ class CustomDrawerLogo extends Component {
             </View>
             <View style={styles.rightDisplay}>
               <Text style={{ color: "white" }}>
-                {this.props.Wisdoms.goals.length}
+                {this.props.Wisdoms.goals.length &&
+                  this.props.Wisdoms.goals.length}
               </Text>
             </View>
           </View>

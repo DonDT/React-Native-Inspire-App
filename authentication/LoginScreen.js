@@ -1,5 +1,11 @@
 import React, { Component } from "react";
-import { Text, StyleSheet, View, Button } from "react-native";
+import {
+  Text,
+  StyleSheet,
+  View,
+  Button,
+  ActivityIndicator
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import FormInput from "../utils/forms/formInput";
 import ValidateForm from "../utils/forms/validateForm";
@@ -31,7 +37,8 @@ class LoginScreen extends Component {
           minLength: 8
         }
       }
-    }
+    },
+    isLoadingData: false
   };
 
   onInputChange = (name, value) => {
@@ -71,6 +78,10 @@ class LoginScreen extends Component {
     }
 
     if (isFormValid) {
+      this.setState({
+        isLoadingData: true
+      });
+
       try {
         const response = await firebase
           .auth()
@@ -80,13 +91,13 @@ class LoginScreen extends Component {
           );
         if (response) {
           this.setState({
-            isLoading: false
+            isLoadingData: false
           });
           this.props.navigation.navigate("AuthCheckScreen");
         }
       } catch (error) {
         this.setState({
-          isLoading: false
+          isLoadingData: false
         });
         if (error.code === "auth/user-not-found") {
           alert("User with that credentials does not exists, try signing up");
@@ -102,6 +113,21 @@ class LoginScreen extends Component {
   render() {
     return (
       <View style={styles.container}>
+        {this.state.isLoadingData ? (
+          <View
+            style={[
+              StyleSheet.absoluteFill,
+              {
+                alignItems: "center",
+                justifyContent: "center",
+                zIndex: 700,
+                elevation: 700
+              }
+            ]}
+          >
+            <ActivityIndicator size="large" color={"#3432a8"} />
+          </View>
+        ) : null}
         <View style={styles.inputLogin}>
           <View style={styles.topLogin}>
             <View>

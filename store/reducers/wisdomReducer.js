@@ -26,7 +26,8 @@ const wisdoms = (state = initialState, action) => {
     case "ADD_WISDOM":
       return {
         ...state,
-        wisdoms: [action.payload, ...state.wisdoms]
+        wisdoms: [action.payload, ...state.wisdoms],
+        ideas: [action.payload, ...state.ideas]
       };
     case "CHANGE_TO_IDEAS":
       return {
@@ -69,13 +70,13 @@ const wisdoms = (state = initialState, action) => {
     case "CHANGE_TO_AMBITIONS":
       return {
         ...state,
-        wisdoms: state.wisdoms.map(item => {
+        wisdom: state.wisdoms.map(item => {
           if (item.title === action.payload.title) {
             return { ...item, category: "ambitions" };
           }
+
           return item;
         }),
-
         ambitions: state.wisdoms.filter(
           wisdom => wisdom.category === "ambitions"
         )
@@ -91,6 +92,7 @@ const wisdoms = (state = initialState, action) => {
         wisdoms: state.wisdoms.filter(
           wisdom => wisdom.title !== action.payload.title
         ),
+        goals: state.goals.filter(goal => goal.title !== action.payload.title),
         ideas: state.ideas.filter(idea => idea.title !== action.payload.title),
         ambitions: state.ambitions.filter(
           ambition => ambition.title !== action.payload.title

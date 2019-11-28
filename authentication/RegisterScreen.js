@@ -1,5 +1,12 @@
 import React, { Component } from "react";
-import { Text, StyleSheet, View, TextInput, Button } from "react-native";
+import {
+  Text,
+  StyleSheet,
+  View,
+  TextInput,
+  Button,
+  ActivityIndicator
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import ValidateForm from "../utils/forms/validateForm";
 
@@ -45,7 +52,8 @@ class RegisterScreen extends Component {
           confirmPW: "password"
         }
       }
-    }
+    },
+    isLoadingData: false
   };
 
   onInputChange = (name, value) => {
@@ -79,7 +87,10 @@ class RegisterScreen extends Component {
     }
 
     if (isFormValid) {
-      //this.props.signUp(formToSubmit);
+      this.setState({
+        isLoadingData: true
+      });
+
       try {
         const response = await firebase
           .auth()
@@ -89,11 +100,14 @@ class RegisterScreen extends Component {
           );
         if (response) {
           this.setState({
-            isLoading: false
+            isLoadingData: false
           });
           this.props.navigation.navigate("HomeScreen");
         }
       } catch (error) {
+        this.setState({
+          isLoadingData: false
+        });
         console.log(error);
         if (error.code == "auth/email-already-in-use") {
           alert("User Already Exist, Try Loging in Again");
@@ -117,6 +131,21 @@ class RegisterScreen extends Component {
   render() {
     return (
       <View style={styles.container}>
+        {this.state.isLoadingData ? (
+          <View
+            style={[
+              StyleSheet.absoluteFill,
+              {
+                alignItems: "center",
+                justifyContent: "center",
+                zIndex: 1000,
+                elevation: 1000
+              }
+            ]}
+          >
+            <ActivityIndicator size="large" color={"#3432a8"} />
+          </View>
+        ) : null}
         <View style={styles.inputLogin}>
           <View style={styles.topLogin}>
             <View>

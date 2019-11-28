@@ -8,7 +8,7 @@ class HomeScreen extends Component {
     return (
       <ScrollView>
         <View style={styles.container}>
-          {this.props.goals.length === 0 ? (
+          {!this.props.goals ? (
             <View styles={styles.noItemStyle}>
               <Text>No Goals to display yet</Text>
             </View>
