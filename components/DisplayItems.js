@@ -9,11 +9,11 @@ import {
   ActivityIndicator
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import Modal from "react-native-modal";
+//import Modal from "react-native-modal";
 import { connect } from "react-redux";
 import ImageProgress from "react-native-image-progress";
 import ProgressPie from "react-native-progress/Pie";
-//import {withRouter} from 'react-dom'
+import Modal, { SlideAnimation, ModalContent } from "react-native-modals";
 
 class DisplayItems extends React.PureComponent {
   state = {
@@ -94,78 +94,104 @@ class DisplayItems extends React.PureComponent {
                 onPress={() => this.setState({ isModalVisible: true })}
               />
             )}
+
             <Modal
-              isVisible={this.state.isModalVisible}
-              animationIn="fadeInRight"
-              animationOut="fadeOutRight"
+              visible={this.state.isModalVisible}
+              modalAnimation={
+                new SlideAnimation({
+                  slideFrom: "bottom"
+                })
+              }
+              width={0.8}
+              height={0.2}
             >
-              <View
-                style={{
-                  height: 180,
-                  width: "100%",
-                  backgroundColor: "white",
-                  borderRadius: 5
-                }}
-              >
+              <ModalContent>
                 <View
                   style={{
-                    alignItems: "center",
-                    justifyContent: "center",
+                    height: 180,
                     width: "100%",
-                    height: 80
+                    backgroundColor: "white",
+                    borderRadius: 5
                   }}
                 >
-                  <Text>Change Category</Text>
-                  <Text style={{ marginTop: 15 }}>Add To</Text>
+                  <View
+                    style={{
+                      alignItems: "center",
+                      justifyContent: "center",
+                      marginBottom: 25
+                    }}
+                  >
+                    <Text style={{ color: "#3432a8" }}>
+                      Choose New Category
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-evenly",
+                      alignItems: "center"
+                    }}
+                  >
+                    <View style={styles.changeIcon}>
+                      <Ionicons
+                        name="ios-home"
+                        size={24}
+                        color="#3432a8"
+                        onPress={() =>
+                          this.handleChange(this.props.wisdom, "home")
+                        }
+                      />
+                    </View>
+                    <View style={styles.changeIcon}>
+                      <Ionicons
+                        name="ios-thunderstorm"
+                        size={24}
+                        color="#3432a8"
+                        onPress={() =>
+                          this.handleChange(this.props.wisdom, "ideas")
+                        }
+                      />
+                    </View>
+                    <View style={styles.changeIcon}>
+                      <Ionicons
+                        name="ios-trending-up"
+                        size={24}
+                        color="#3432a8"
+                        onPress={() =>
+                          this.handleChange(this.props.wisdom, "goals")
+                        }
+                      />
+                    </View>
+                    <View style={styles.changeIcon}>
+                      <Ionicons
+                        name="ios-walk"
+                        size={24}
+                        color="#3432a8"
+                        onPress={() =>
+                          this.handleChange(this.props.wisdom, "motivations")
+                        }
+                      />
+                    </View>
+                    <View style={styles.changeIcon}>
+                      <Ionicons
+                        name="ios-trophy"
+                        size={24}
+                        color="#3432a8"
+                        onPress={() =>
+                          this.handleChange(this.props.wisdom, "ambitions")
+                        }
+                      />
+                    </View>
+                  </View>
+                  <View style={{ marginTop: 20 }}>
+                    <Button
+                      title="Close"
+                      onPress={() => this.toggleModal()}
+                      color={"pink"}
+                    />
+                  </View>
                 </View>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-evenly",
-                    alignItems: "center"
-                  }}
-                >
-                  <Ionicons
-                    name="ios-home"
-                    size={24}
-                    color="#3432a8"
-                    onPress={() => this.handleChange(this.props.wisdom, "home")}
-                  />
-                  <Ionicons
-                    name="ios-thunderstorm"
-                    size={24}
-                    color="#3432a8"
-                    onPress={() =>
-                      this.handleChange(this.props.wisdom, "ideas")
-                    }
-                  />
-                  <Ionicons
-                    name="ios-trending-up"
-                    size={24}
-                    color="#3432a8"
-                    onPress={() =>
-                      this.handleChange(this.props.wisdom, "goals")
-                    }
-                  />
-                  <Ionicons
-                    name="ios-walk"
-                    size={24}
-                    color="#3432a8"
-                    onPress={() =>
-                      this.handleChange(this.props.wisdom, "motivations")
-                    }
-                  />
-                  <Ionicons
-                    name="ios-trophy"
-                    size={24}
-                    color="#3432a8"
-                    onPress={() =>
-                      this.handleChange(this.props.wisdom, "ambitions")
-                    }
-                  />
-                </View>
-                <Button title="Close" onPress={() => this.toggleModal()} />
-              </View>
+              </ModalContent>
             </Modal>
           </View>
 
@@ -212,15 +238,24 @@ const styles = StyleSheet.create({
   },
   viewButton: {
     fontSize: 15,
-
-    padding: 5
+    padding: 5,
+    color: "#3432a8"
   },
   viewText: {
     marginLeft: 5,
     borderRadius: 15,
     borderWidth: 1,
-    borderColor: "blue",
+    borderColor: "#3432a8",
     backgroundColor: "pink"
+  },
+  changeIcon: {
+    width: 35,
+    height: 35,
+    borderWidth: 0.5,
+    borderColor: "pink",
+    borderRadius: 25,
+    alignItems: "center",
+    justifyContent: "center"
   }
 });
 
