@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import ValidateForm from "../utils/forms/validateForm";
+import * as Animatable from "react-native-animatable";
 
 import * as firebase from "firebase/app";
 import "firebase/auth";
@@ -146,73 +147,75 @@ class RegisterScreen extends Component {
             <ActivityIndicator size="large" color={"#3432a8"} />
           </View>
         ) : null}
-        <View style={styles.inputLogin}>
-          <View style={styles.topLogin}>
-            <View>
-              <Ionicons name="ios-power" size={24} color="#3432a8" />
-            </View>
+        <Animatable.View animation={"slideInLeft"}>
+          <View style={styles.inputLogin}>
+            <View style={styles.topLogin}>
+              <View>
+                <Ionicons name="ios-power" size={24} color="#3432a8" />
+              </View>
 
+              <View>
+                <Text style={{ color: "#3432a8", marginLeft: 125 }}>
+                  Tenaciuos{" "}
+                </Text>
+              </View>
+            </View>
             <View>
-              <Text style={{ color: "#3432a8", marginLeft: 125 }}>
-                Tenaciuos{" "}
-              </Text>
+              <TextInput
+                autoCapitalize={"none"}
+                placeholder="Name"
+                placeholderTextColor="#cecece"
+                style={styles.textInput}
+                //type={this.state.form.name.type}
+                value={this.state.form.name.value}
+                onChangeText={value => this.onInputChange("name", value)}
+              />
+              <TextInput
+                autoCapitalize={"none"}
+                placeholder="Email"
+                placeholderTextColor="#cecece"
+                style={styles.textInput}
+                value={this.state.form.email.value}
+                onChangeText={value => this.onInputChange("email", value)}
+              />
+              <TextInput
+                autoCapitalize={"none"}
+                placeholder="Password"
+                placeholderTextColor="#cecece"
+                style={styles.textInput}
+                value={this.state.form.password.value}
+                onChangeText={value => this.onInputChange("password", value)}
+                secureTextEntry
+              />
+              <TextInput
+                autoCapitalize={"none"}
+                placeholder="Confirm Password"
+                placeholderTextColor="#cecece"
+                style={styles.textInput}
+                value={this.state.form.confirmPassword.value}
+                onChangeText={value =>
+                  this.onInputChange("confirmPassword", value)
+                }
+                secureTextEntry
+              />
+              {this.formErrors()}
+            </View>
+            <View style={styles.LoginText}>
+              <Button
+                style={{ color: "white" }}
+                title="Create Account "
+                onPress={() => this.submitUserInfo()}
+              />
+            </View>
+            <View style={styles.CreateText}>
+              <Button
+                style={{ color: "#3432a8" }}
+                title="Login"
+                onPress={() => this.props.navigation.navigate("LoginScreen")}
+              />
             </View>
           </View>
-          <View>
-            <TextInput
-              autoCapitalize={"none"}
-              placeholder="Name"
-              placeholderTextColor="#cecece"
-              style={styles.textInput}
-              //type={this.state.form.name.type}
-              value={this.state.form.name.value}
-              onChangeText={value => this.onInputChange("name", value)}
-            />
-            <TextInput
-              autoCapitalize={"none"}
-              placeholder="Email"
-              placeholderTextColor="#cecece"
-              style={styles.textInput}
-              value={this.state.form.email.value}
-              onChangeText={value => this.onInputChange("email", value)}
-            />
-            <TextInput
-              autoCapitalize={"none"}
-              placeholder="Password"
-              placeholderTextColor="#cecece"
-              style={styles.textInput}
-              value={this.state.form.password.value}
-              onChangeText={value => this.onInputChange("password", value)}
-              secureTextEntry
-            />
-            <TextInput
-              autoCapitalize={"none"}
-              placeholder="Confirm Password"
-              placeholderTextColor="#cecece"
-              style={styles.textInput}
-              value={this.state.form.confirmPassword.value}
-              onChangeText={value =>
-                this.onInputChange("confirmPassword", value)
-              }
-              secureTextEntry
-            />
-            {this.formErrors()}
-          </View>
-          <View style={styles.LoginText}>
-            <Button
-              style={{ color: "white" }}
-              title="Create Account "
-              onPress={() => this.submitUserInfo()}
-            />
-          </View>
-          <View style={styles.CreateText}>
-            <Button
-              style={{ color: "#3432a8" }}
-              title="Login"
-              onPress={() => this.props.navigation.navigate("LoginScreen")}
-            />
-          </View>
-        </View>
+        </Animatable.View>
       </View>
     );
   }

@@ -9,16 +9,24 @@ import {
   ActivityIndicator
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-//import Modal from "react-native-modal";
 import { connect } from "react-redux";
 import ImageProgress from "react-native-image-progress";
 import ProgressPie from "react-native-progress/Pie";
 import Modal, { SlideAnimation, ModalContent } from "react-native-modals";
+import * as Font from "expo-font";
 
 class DisplayItems extends React.PureComponent {
   state = {
-    isModalVisible: false
+    isModalVisible: false,
+    fontLoaded: false
   };
+
+  async componentDidMount() {
+    await Font.loadAsync({
+      Baskervville: require("../assets/fonts/Baskervville-Regular.ttf")
+    });
+    this.setState({ fontLoaded: true });
+  }
 
   toggleModal = () => {
     this.setState({ isModalVisible: !this.state.isModalVisible });
@@ -44,6 +52,15 @@ class DisplayItems extends React.PureComponent {
   };
 
   render() {
+    // if (this.state.fontsDownload) {
+    //   return (
+    //     <AppLoading
+    //       startAsync={fetchFonts}
+    //       onFinish={() => this.setState({ fontsDownload: true })}
+    //     />
+    //   );
+    // }
+
     return (
       <View style={styles.container}>
         <TouchableOpacity
@@ -73,18 +90,22 @@ class DisplayItems extends React.PureComponent {
 
         <View style={styles.textSection}>
           <View style={styles.titleAndIcon}>
-            <Text style={styles.titleText}>{this.props.wisdom.title}</Text>
+            {this.state.fontLoaded && (
+              <Text style={styles.titleText}>{this.props.wisdom.title}</Text>
+            )}
             <View style={styles.viewText}>
-              <Text
-                style={styles.viewButton}
-                onPress={() =>
-                  this.props.navigation.navigate("ItemScreen", {
-                    wisdom: this.props
-                  })
-                }
-              >
-                View
-              </Text>
+              {this.state.fontLoaded && (
+                <Text
+                  style={styles.viewButton}
+                  onPress={() =>
+                    this.props.navigation.navigate("ItemScreen", {
+                      wisdom: this.props
+                    })
+                  }
+                >
+                  View
+                </Text>
+              )}
             </View>
             {this.props.showMoreIcon && (
               <Ionicons
@@ -195,7 +216,11 @@ class DisplayItems extends React.PureComponent {
             </Modal>
           </View>
 
-          <Text numberOfLines={3}>{this.props.wisdom.detail}</Text>
+          {this.state.fontLoaded && (
+            <Text numberOfLines={3} style={{ fontFamily: "Baskervville" }}>
+              {this.props.wisdom.detail}
+            </Text>
+          )}
         </View>
       </View>
     );
@@ -222,7 +247,8 @@ const styles = StyleSheet.create({
   },
   titleText: {
     fontSize: 18,
-    marginBottom: 7
+    marginBottom: 7,
+    fontFamily: "Baskervville"
   },
   textSection: {
     flex: 1,
@@ -239,7 +265,8 @@ const styles = StyleSheet.create({
   viewButton: {
     fontSize: 15,
     padding: 5,
-    color: "#3432a8"
+    color: "#3432a8",
+    fontFamily: "Baskervville"
   },
   viewText: {
     marginLeft: 5,

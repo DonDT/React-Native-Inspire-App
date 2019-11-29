@@ -20,6 +20,7 @@ import { connect } from "react-redux";
 import { compose } from "redux";
 import { connectActionSheet } from "@expo/react-native-action-sheet";
 import * as ImageHandler from "../utils/handleImageFunction";
+import * as Animatable from "react-native-animatable";
 import "firebase/storage";
 
 class HomeScreen extends Component {
@@ -261,6 +262,16 @@ class HomeScreen extends Component {
       }
     ];
 
+    const entranceAnimations = [
+      "slideInDown",
+      "slideInUp",
+      "slideInLeft",
+      "slideInRight"
+    ];
+
+    const AnimationStyle =
+      entranceAnimations[Math.floor(Math.random() * entranceAnimations.length)];
+
     return (
       <View>
         {this.state.isLoadingData ? (
@@ -291,16 +302,18 @@ class HomeScreen extends Component {
             }}
             key={index}
           >
-            <DisplayItems
-              wisdom={item}
-              key={index}
-              index={index}
-              handleChangeCategory={this.handleChangeCategory}
-              showMoreIcon={true}
-              editable={true}
-              handleImagePress={this.handleImagePress}
-              navigation={this.props.navigation}
-            />
+            <Animatable.View animation={AnimationStyle}>
+              <DisplayItems
+                wisdom={item}
+                key={index}
+                index={index}
+                handleChangeCategory={this.handleChangeCategory}
+                showMoreIcon={true}
+                editable={true}
+                handleImagePress={this.handleImagePress}
+                navigation={this.props.navigation}
+              />
+            </Animatable.View>
           </Swipeout>
         </View>
       </View>
@@ -317,55 +330,56 @@ class HomeScreen extends Component {
   };
 
   render() {
-    //console.log(this.state.searchTerm);
     return (
       <SafeAreaView>
         {this.state.showSearchInput && (
-          <View style={styles.searchView}>
-            <TextInput
-              autoCapitalize={"none"}
-              placeholder="Enter search term "
-              placeholderTextColor="gold"
-              name="search"
-              autoComplete={false}
-              autoCorrect={false}
-              spellCheck={false}
-              style={[
-                styles.textInput,
-                {
-                  marginTop: 20,
-                  borderBottomColor: "gold",
-                  borderBottomWidth: 0.8,
-                  height: 30
-                  //paddingBottom: 1
+          <Animatable.View animation={"slideInDown"}>
+            <View style={styles.searchView}>
+              <TextInput
+                autoCapitalize={"none"}
+                placeholder="Enter search term "
+                placeholderTextColor="gold"
+                name="search"
+                autoComplete={false}
+                autoCorrect={false}
+                spellCheck={false}
+                style={[
+                  styles.textInput,
+                  {
+                    marginTop: 20,
+                    borderBottomColor: "gold",
+                    borderBottomWidth: 0.8,
+                    height: 30
+                    //paddingBottom: 1
+                  }
+                ]}
+                onChangeText={value =>
+                  this.setState({ searchTerm: value }, () => {
+                    this.handleSearchData;
+                  })
                 }
-              ]}
-              onChangeText={value =>
-                this.setState({ searchTerm: value }, () => {
-                  this.handleSearchData;
-                })
-              }
-              ref={component => {
-                this.textInputRef = component;
-              }}
-            />
-            <Ionicons
-              name="ios-send"
-              size={25}
-              color={"gold"}
-              onPress={() => this.handleSearchData()}
-              style={{ marginTop: 20 }}
-            />
-            <Ionicons
-              name="ios-close"
-              size={32}
-              color={"gold"}
-              onPress={() =>
-                this.setState({ showSearchInput: false, showIcons: true })
-              }
-              style={{ marginTop: 20 }}
-            />
-          </View>
+                ref={component => {
+                  this.textInputRef = component;
+                }}
+              />
+              <Ionicons
+                name="ios-send"
+                size={25}
+                color={"gold"}
+                onPress={() => this.handleSearchData()}
+                style={{ marginTop: 20 }}
+              />
+              <Ionicons
+                name="ios-close"
+                size={32}
+                color={"gold"}
+                onPress={() =>
+                  this.setState({ showSearchInput: false, showIcons: true })
+                }
+                style={{ marginTop: 20 }}
+              />
+            </View>
+          </Animatable.View>
         )}
         {this.state.showIcons && (
           <View style={styles.headerIcons}>
@@ -450,19 +464,21 @@ class HomeScreen extends Component {
           )}
         </View>
         {this.state.showAddIcon && (
-          <View>
-            <TouchableOpacity>
-              <View style={styles.button}>
-                <Button
-                  title="+"
-                  style={styles.textStyle}
-                  onPress={() =>
-                    this.addData(this.state.title, this.state.detail)
-                  }
-                />
-              </View>
-            </TouchableOpacity>
-          </View>
+          <Animatable.View animation={"slideInRight"}>
+            <View>
+              <TouchableOpacity>
+                <View style={styles.button}>
+                  <Button
+                    title="+"
+                    style={styles.textStyle}
+                    onPress={() =>
+                      this.addData(this.state.title, this.state.detail)
+                    }
+                  />
+                </View>
+              </TouchableOpacity>
+            </View>
+          </Animatable.View>
         )}
         <ScrollView>
           {this.state.showWisdoms && (
@@ -490,21 +506,23 @@ class HomeScreen extends Component {
         </ScrollView>
         {this.state.showDeleteIcon && (
           <TouchableOpacity>
-            <View style={styles.button1}>
-              <Button
-                title="X"
-                style={styles.textStyle}
-                onPress={() =>
-                  this.setState({
-                    showInput: false,
-                    showDeleteIcon: false,
-                    showIcons: true,
-                    showWisdoms: true,
-                    showAddIcon: false
-                  })
-                }
-              />
-            </View>
+            <Animatable.View animation={"slideInLeft"}>
+              <View style={styles.button1}>
+                <Button
+                  title="X"
+                  style={styles.textStyle}
+                  onPress={() =>
+                    this.setState({
+                      showInput: false,
+                      showDeleteIcon: false,
+                      showIcons: true,
+                      showWisdoms: true,
+                      showAddIcon: false
+                    })
+                  }
+                />
+              </View>
+            </Animatable.View>
           </TouchableOpacity>
         )}
       </SafeAreaView>
