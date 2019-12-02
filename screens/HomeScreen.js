@@ -8,7 +8,8 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   ScrollView,
-  FlatList
+  FlatList,
+  Text
 } from "react-native";
 import * as firebase from "firebase";
 import "firebase/storage";
@@ -21,6 +22,8 @@ import { compose } from "redux";
 import { connectActionSheet } from "@expo/react-native-action-sheet";
 import * as ImageHandler from "../utils/handleImageFunction";
 import * as Animatable from "react-native-animatable";
+import { SwipeListView, SwipeRow } from "react-native-swipe-list-view";
+
 import "firebase/storage";
 
 class HomeScreen extends Component {
@@ -246,79 +249,79 @@ class HomeScreen extends Component {
     );
   };
 
-  renderItem = ({ item }, index) => {
-    let swipeOutButtons = [
-      {
-        text: "Delete",
-        component: (
-          <View
-            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-          >
-            <Ionicons name="ios-trash" size={24} colors="white" />
-          </View>
-        ),
-        backgroundColor: "#E6E6FA",
-        onPress: () => this.deleteItem(item, index)
-      }
-    ];
+  // renderItem = ({ item }, index) => {
+  //   let swipeOutButtons = [
+  //     {
+  //       text: "Delete",
+  //       component: (
+  //         <View
+  //           style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+  //         >
+  //           <Ionicons name="ios-trash" size={24} colors="white" />
+  //         </View>
+  //       ),
+  //       backgroundColor: "#E6E6FA",
+  //       onPress: () => this.deleteItem(item, index)
+  //     }
+  //   ];
 
-    const entranceAnimations = [
-      "slideInDown",
-      "slideInUp",
-      "slideInLeft",
-      "slideInRight"
-    ];
+  //   const entranceAnimations = [
+  //     "slideInDown",
+  //     "slideInUp",
+  //     "slideInLeft",
+  //     "slideInRight"
+  //   ];
 
-    const AnimationStyle =
-      entranceAnimations[Math.floor(Math.random() * entranceAnimations.length)];
+  //   const AnimationStyle =
+  //     entranceAnimations[Math.floor(Math.random() * entranceAnimations.length)];
 
-    return (
-      <View>
-        {this.state.isLoadingData ? (
-          <View
-            style={[
-              StyleSheet.absoluteFill,
-              {
-                alignItems: "center",
-                justifyContent: "center",
-                zIndex: 700,
-                elevation: 700,
-                flex: 1
-              }
-            ]}
-          >
-            <ActivityIndicator size="large" color={"#3432a8"} />
-          </View>
-        ) : null}
-        <View>
-          <Swipeout
-            backgroundColor={"#E6E6FA"}
-            right={swipeOutButtons}
-            autoClose={true}
-            style={{
-              marginHorizontal: 5,
-              marginVertical: 5,
-              borderRadius: 10
-            }}
-            key={index}
-          >
-            <Animatable.View animation={AnimationStyle}>
-              <DisplayItems
-                wisdom={item}
-                key={index}
-                index={index}
-                handleChangeCategory={this.handleChangeCategory}
-                showMoreIcon={true}
-                editable={true}
-                handleImagePress={this.handleImagePress}
-                navigation={this.props.navigation}
-              />
-            </Animatable.View>
-          </Swipeout>
-        </View>
-      </View>
-    );
-  };
+  //   return (
+  //     <View>
+  //       {this.state.isLoadingData ? (
+  //         <View
+  //           style={[
+  //             StyleSheet.absoluteFill,
+  //             {
+  //               alignItems: "center",
+  //               justifyContent: "center",
+  //               zIndex: 700,
+  //               elevation: 700,
+  //               flex: 1
+  //             }
+  //           ]}
+  //         >
+  //           <ActivityIndicator size="large" color={"#3432a8"} />
+  //         </View>
+  //       ) : null}
+  //       <View>
+  //         <Swipeout
+  //           backgroundColor={"#E6E6FA"}
+  //           right={swipeOutButtons}
+  //           autoClose={true}
+  //           style={{
+  //             marginHorizontal: 5,
+  //             marginVertical: 5,
+  //             borderRadius: 10
+  //           }}
+  //           key={index}
+  //         >
+  //           <Animatable.View animation={AnimationStyle}>
+  //             <DisplayItems
+  //               wisdom={item}
+  //               key={index}
+  //               index={index}
+  //               handleChangeCategory={this.handleChangeCategory}
+  //               showMoreIcon={true}
+  //               editable={true}
+  //               handleImagePress={this.handleImagePress}
+  //               navigation={this.props.navigation}
+  //             />
+  //           </Animatable.View>
+  //         </Swipeout>
+  //       </View>
+  //     </View>
+  //   );
+  // };
 
   handleSearchData = () => {
     const itemsToDisplay = this.props.Wisdoms.wisdoms.filter(
@@ -483,7 +486,7 @@ class HomeScreen extends Component {
         <ScrollView>
           {this.state.showWisdoms && (
             <View>
-              <FlatList
+              {/* <FlatList
                 keyExtractor={(item, index) => index.toString()}
                 data={
                   this.state.searchTerm.trim() !== ""
@@ -500,6 +503,43 @@ class HomeScreen extends Component {
                   offset: 40 * index,
                   index
                 })}
+              /> */}
+              <SwipeListView
+                data={
+                  this.state.searchTerm.trim() !== ""
+                    ? this.state.searchedItems[0]
+                    : this.props.Wisdoms.wisdoms
+                }
+                renderItem={(data, rowMap) => (
+                  // <View style={styles.rowFront}>
+                  //     <Text>I am {data.item} in a SwipeListView</Text>
+                  // </View>
+                  <View style={styles.rowFront}>
+                    <DisplayItems
+                      wisdom={data.item}
+                      key={data.item.title}
+                      //index={index}
+                      handleChangeCategory={this.handleChangeCategory}
+                      showMoreIcon={true}
+                      editable={true}
+                      handleImagePress={this.handleImagePress}
+                      navigation={this.props.navigation}
+                    />
+                  </View>
+                )}
+                renderHiddenItem={(data, rowMap) => (
+                  <View style={styles.rowBack}>
+                    <Text>Update</Text>
+                    <Ionicons
+                      name="ios-trash"
+                      size={24}
+                      colors="black"
+                      onPress={() => this.deleteItem(data.item)}
+                    />
+                  </View>
+                )}
+                leftOpenValue={75}
+                rightOpenValue={-75}
               />
             </View>
           )}
@@ -580,6 +620,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-around",
     marginBottom: 20
+  },
+  rowFront: {
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  rowBack: {
+    alignItems: "center",
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingLeft: 15,
+    paddingRight: 15
   }
 });
 
