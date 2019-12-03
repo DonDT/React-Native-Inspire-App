@@ -6,9 +6,7 @@ import {
   SafeAreaView,
   Button,
   TouchableOpacity,
-  ActivityIndicator,
   ScrollView,
-  FlatList,
   Text
 } from "react-native";
 import * as firebase from "firebase";
@@ -16,15 +14,23 @@ import "firebase/storage";
 import { Ionicons } from "@expo/vector-icons";
 import { dataToArray } from "../utils/helperURLs";
 import DisplayItems from "../components/DisplayItems";
-import Swipeout from "react-native-swipeout";
 import { connect } from "react-redux";
 import { compose } from "redux";
 import { connectActionSheet } from "@expo/react-native-action-sheet";
 import * as ImageHandler from "../utils/handleImageFunction";
 import * as Animatable from "react-native-animatable";
-import { SwipeListView, SwipeRow } from "react-native-swipe-list-view";
+import { SwipeListView } from "react-native-swipe-list-view";
+//import Animated from "react-native-reanimated";
 
 import "firebase/storage";
+
+// const HEADER_HEIGHT = 42;
+// const scrollY = new Animated.Value(0);
+// const diffClampScrollY = Animated.diffClamp(scrollY, 0, HEADER_HEIGHT);
+// const headerY = Animated.interpolate(diffClampScrollY, {
+//   inputRange: [0, HEADER_HEIGHT],
+//   outputRange: [0, -HEADER_HEIGHT]
+// });
 
 class HomeScreen extends Component {
   constructor(props) {
@@ -41,7 +47,10 @@ class HomeScreen extends Component {
       currentUser: {},
       showAddIcon: false,
       searchTerm: "",
-      searchedItems: []
+      searchedItems: [],
+      upDateIsActive: false,
+      keyOfItemToUpdate: "",
+      categoryOfItemToUpdate: ""
     };
   }
 
@@ -99,45 +108,46 @@ class HomeScreen extends Component {
 
     // Checking if data already exist before adding to database.
     this.setState({ isLoadingData: true });
-    try {
-      const snapshot = await firebase
-        .database()
-        .ref("wisdom")
-        .child(this.state.currentUser.uid)
-        .orderByChild("title")
-        .equalTo(title)
-        .once("value");
-      if (snapshot.exists()) {
-        alert("Unable to add, as book already exists");
-      } else {
-        const key = await firebase
+    if (title.trim() !== "" && detail.trim() !== "") {
+      try {
+        const snapshot = await firebase
           .database()
           .ref("wisdom")
           .child(this.state.currentUser.uid)
-          .push().key;
-        //console.log(this.state.currentUser.uid);
-        await firebase
-          .database()
-          .ref("wisdom")
-          .child(this.state.currentUser.uid)
-          .child(key)
-          .set({ title: title, detail: detail, category: "ideas", key: key });
+          .orderByChild("title")
+          .equalTo(title)
+          .once("value");
+        if (snapshot.exists()) {
+          alert("Unable to add, as book already exists");
+        } else {
+          const key = await firebase
+            .database()
+            .ref("wisdom")
+            .child(this.state.currentUser.uid)
+            .push().key;
+          await firebase
+            .database()
+            .ref("wisdom")
+            .child(this.state.currentUser.uid)
+            .child(key)
+            .set({ title: title, detail: detail, category: "ideas", key: key });
 
-        this.props.addWisdom({
-          title: title,
-          detail: detail,
-          category: "home",
-          key: key
-        });
-        this.setState({
-          isLoadingData: false
-        });
+          this.props.addWisdom({
+            title: title,
+            detail: detail,
+            category: "home",
+            key: key
+          });
+          this.setState({
+            isLoadingData: false
+          });
+        }
+      } catch (error) {
+        console.log(error);
       }
-    } catch (error) {
-      console.log(error);
-      //this.props.toggleIsLoadingBooks(false);
+    } else {
+      null;
     }
-    //}
   };
 
   handleChangeCategory = async (wisdom, category) => {
@@ -232,7 +242,7 @@ class HomeScreen extends Component {
   handleImagePress = item => {
     const options = ["Select from photos", "Camera", "Cancel"];
     const cancelButtonIndex = 2;
-    console.log(item);
+    //console.log(item);
     this.props.showActionSheetWithOptions(
       {
         options,
@@ -249,87 +259,54 @@ class HomeScreen extends Component {
     );
   };
 
-  // renderItem = ({ item }, index) => {
-  //   let swipeOutButtons = [
-  //     {
-  //       text: "Delete",
-  //       component: (
-  //         <View
-  //           style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-  //         >
-  //           <Ionicons name="ios-trash" size={24} colors="white" />
-  //         </View>
-  //       ),
-  //       backgroundColor: "#E6E6FA",
-  //       onPress: () => this.deleteItem(item, index)
-  //     }
-  //   ];
-
-  //   const entranceAnimations = [
-  //     "slideInDown",
-  //     "slideInUp",
-  //     "slideInLeft",
-  //     "slideInRight"
-  //   ];
-
-  //   const AnimationStyle =
-  //     entranceAnimations[Math.floor(Math.random() * entranceAnimations.length)];
-
-  //   return (
-  //     <View>
-  //       {this.state.isLoadingData ? (
-  //         <View
-  //           style={[
-  //             StyleSheet.absoluteFill,
-  //             {
-  //               alignItems: "center",
-  //               justifyContent: "center",
-  //               zIndex: 700,
-  //               elevation: 700,
-  //               flex: 1
-  //             }
-  //           ]}
-  //         >
-  //           <ActivityIndicator size="large" color={"#3432a8"} />
-  //         </View>
-  //       ) : null}
-  //       <View>
-  //         <Swipeout
-  //           backgroundColor={"#E6E6FA"}
-  //           right={swipeOutButtons}
-  //           autoClose={true}
-  //           style={{
-  //             marginHorizontal: 5,
-  //             marginVertical: 5,
-  //             borderRadius: 10
-  //           }}
-  //           key={index}
-  //         >
-  //           <Animatable.View animation={AnimationStyle}>
-  //             <DisplayItems
-  //               wisdom={item}
-  //               key={index}
-  //               index={index}
-  //               handleChangeCategory={this.handleChangeCategory}
-  //               showMoreIcon={true}
-  //               editable={true}
-  //               handleImagePress={this.handleImagePress}
-  //               navigation={this.props.navigation}
-  //             />
-  //           </Animatable.View>
-  //         </Swipeout>
-  //       </View>
-  //     </View>
-  //   );
-  // };
-
   handleSearchData = () => {
     const itemsToDisplay = this.props.Wisdoms.wisdoms.filter(
-      wisdom => wisdom.title === this.state.searchTerm
+      wisdom =>
+        wisdom.title.toLowerCase().includes(this.state.searchTerm.toLowerCase())
+      //wisdom.title.toLowerCase() === this.state.searchTerm.toLowerCase()
     );
     this.setState({
       searchedItems: [...this.state.searchedItems, itemsToDisplay]
     });
+  };
+
+  handleUpdateText = data => {
+    this.setState(
+      {
+        showInput: !this.state.showInput,
+        showWisdoms: false,
+        title: data.title,
+        detail: data.detail,
+        keyOfItemToUpdate: data.key,
+        categoryOfItemToUpdate: data.category
+      },
+      () => {
+        this.setState({
+          showIcons: !this.state.showIcons,
+          showDeleteIcon: true,
+          showAddIcon: true,
+          upDateIsActive: true
+        });
+      }
+    );
+  };
+
+  UpdateData = async (title, detail) => {
+    let ObjectToDelete = {
+      title: title,
+      detail: detail,
+      category: this.state.categoryOfItemToUpdate,
+      key: this.state.keyOfItemToUpdate
+    };
+    try {
+      this.deleteItem(ObjectToDelete);
+      this.addData(title, detail);
+      this.setState({
+        upDateIsActive: false
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   render() {
@@ -386,7 +363,12 @@ class HomeScreen extends Component {
         )}
         {this.state.showIcons && (
           <View style={styles.headerIcons}>
-            <View style={{ justifyContent: "flex-end", flexDirection: "row" }}>
+            <View
+              style={{
+                justifyContent: "flex-end",
+                flexDirection: "row"
+              }}
+            >
               <Ionicons
                 name="ios-create"
                 size={28}
@@ -431,7 +413,6 @@ class HomeScreen extends Component {
                     borderBottomColor: "gold",
                     borderBottomWidth: 0.8,
                     height: 30
-                    //paddingBottom: 1
                   }
                 ]}
                 autoCapitalize={"none"}
@@ -441,6 +422,7 @@ class HomeScreen extends Component {
                 autoComplete={false}
                 autoCorrect={false}
                 spellCheck={false}
+                value={this.state.title}
                 onChangeText={value => this.setState({ title: value })}
                 ref={component => {
                   this.textInputRef = component;
@@ -450,6 +432,7 @@ class HomeScreen extends Component {
                 name="detail"
                 style={[styles.textInput, { marginTop: 20, height: 500 }]}
                 autoCapitalize={"none"}
+                value={this.state.detail}
                 placeholder="Wisdom "
                 placeholderTextColor="gold"
                 multiline
@@ -469,41 +452,30 @@ class HomeScreen extends Component {
         {this.state.showAddIcon && (
           <Animatable.View animation={"slideInRight"}>
             <View>
-              <TouchableOpacity>
-                <View style={styles.button}>
-                  <Button
-                    title="+"
-                    style={styles.textStyle}
-                    onPress={() =>
-                      this.addData(this.state.title, this.state.detail)
-                    }
-                  />
-                </View>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => {
+                  this.state.upDateIsActive
+                    ? this.UpdateData(this.state.title, this.state.detail)
+                    : this.addData(this.state.title, this.state.detail);
+                }}
+              >
+                <Text style={{ fontSize: 30, color: "#3432a8" }}>+</Text>
               </TouchableOpacity>
             </View>
           </Animatable.View>
         )}
-        <ScrollView>
+        <ScrollView
+        // scrollEventThrottle={16}
+        // bounces={false}
+        // onScroll={Animated.event([
+        //   {
+        //     nativeEvent: { contentOffset: { y: scrollY } }
+        //   }
+        // ])}
+        >
           {this.state.showWisdoms && (
             <View>
-              {/* <FlatList
-                keyExtractor={(item, index) => index.toString()}
-                data={
-                  this.state.searchTerm.trim() !== ""
-                    ? this.state.searchedItems[0]
-                    : this.props.Wisdoms.wisdoms
-                }
-                //renderItem={({ item }, index) => this.renderItem(item, index)}
-                //ListEmptyComponent="No Data To Display!"
-                renderItem={this.renderItem}
-                initialNumToRender={5}
-                maxToRenderPerBatch={10}
-                getItemLayout={(item, index) => ({
-                  length: 40,
-                  offset: 40 * index,
-                  index
-                })}
-              /> */}
               <SwipeListView
                 data={
                   this.state.searchTerm.trim() !== ""
@@ -511,14 +483,10 @@ class HomeScreen extends Component {
                     : this.props.Wisdoms.wisdoms
                 }
                 renderItem={(data, rowMap) => (
-                  // <View style={styles.rowFront}>
-                  //     <Text>I am {data.item} in a SwipeListView</Text>
-                  // </View>
                   <View style={styles.rowFront}>
                     <DisplayItems
                       wisdom={data.item}
                       key={data.item.title}
-                      //index={index}
                       handleChangeCategory={this.handleChangeCategory}
                       showMoreIcon={true}
                       editable={true}
@@ -529,11 +497,20 @@ class HomeScreen extends Component {
                 )}
                 renderHiddenItem={(data, rowMap) => (
                   <View style={styles.rowBack}>
-                    <Text>Update</Text>
+                    <View style={{ flexDirection: "column" }}>
+                      <Ionicons
+                        name="ios-aperture"
+                        size={24}
+                        color="#3432a8"
+                        onPress={() => this.handleUpdateText(data.item)}
+                        style={{ marginLeft: 15 }}
+                      />
+                      <Text style={styles.updateText}>Update</Text>
+                    </View>
                     <Ionicons
                       name="ios-trash"
                       size={24}
-                      colors="black"
+                      color="#3432a8"
                       onPress={() => this.deleteItem(data.item)}
                     />
                   </View>
@@ -557,7 +534,9 @@ class HomeScreen extends Component {
                       showDeleteIcon: false,
                       showIcons: true,
                       showWisdoms: true,
-                      showAddIcon: false
+                      showAddIcon: false,
+                      title: "",
+                      detail: ""
                     })
                   }
                 />
@@ -594,15 +573,19 @@ const styles = StyleSheet.create({
     right: 20,
     top: 500
   },
-  textStyle: {
-    fontSize: 50
-  },
+
   headerIcons: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-end",
     marginTop: 10,
     marginLeft: 10
+    //transform: [{ translateY: headerY }],
+    //left: 0,
+    //right: 0,
+    //top: 0,
+    //height: HEADER_HEIGHT,
+    //zIndex: 100
   },
   button1: {
     width: 50,
@@ -632,6 +615,9 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingLeft: 15,
     paddingRight: 15
+  },
+  updateText: {
+    color: "#3432a8"
   }
 });
 
