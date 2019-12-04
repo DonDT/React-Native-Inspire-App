@@ -6,7 +6,8 @@ import {
   Image,
   TouchableOpacity,
   Button,
-  ActivityIndicator
+  ActivityIndicator,
+  Platform
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { connect } from "react-redux";
@@ -52,15 +53,6 @@ class DisplayItems extends React.PureComponent {
   };
 
   render() {
-    // if (this.state.fontsDownload) {
-    //   return (
-    //     <AppLoading
-    //       startAsync={fetchFonts}
-    //       onFinish={() => this.setState({ fontsDownload: true })}
-    //     />
-    //   );
-    // }
-
     return (
       <View style={styles.container}>
         <TouchableOpacity
@@ -124,7 +116,7 @@ class DisplayItems extends React.PureComponent {
                 })
               }
               width={0.8}
-              height={0.2}
+              height={Platform.OS === "ios" ? 0.2 : 0.3}
             >
               <ModalContent>
                 <View

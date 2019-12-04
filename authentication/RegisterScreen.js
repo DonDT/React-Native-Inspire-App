@@ -5,7 +5,8 @@ import {
   View,
   TextInput,
   Button,
-  ActivityIndicator
+  ActivityIndicator,
+  Platform
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import ValidateForm from "../utils/forms/validateForm";
@@ -205,6 +206,7 @@ class RegisterScreen extends Component {
                 style={{ color: "white" }}
                 title="Create Account "
                 onPress={() => this.submitUserInfo()}
+                color={Platform.OS === "android" ? "#3432a8" : "white"}
               />
             </View>
             <View style={styles.CreateText}>
@@ -212,6 +214,7 @@ class RegisterScreen extends Component {
                 style={{ color: "#3432a8" }}
                 title="Login"
                 onPress={() => this.props.navigation.navigate("LoginScreen")}
+                color={Platform.OS === "android" ? "#3432a8" : "#3432a8"}
               />
             </View>
           </View>
@@ -269,7 +272,7 @@ const styles = StyleSheet.create({
     borderColor: "#3432a8",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "white"
+    backgroundColor: Platform.OS === "ios" ? "white" : "#3432a8"
   },
   topLogin: {
     flexDirection: "row",

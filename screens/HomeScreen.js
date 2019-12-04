@@ -4,11 +4,15 @@ import {
   View,
   TextInput,
   SafeAreaView,
-  Button,
   TouchableOpacity,
   ScrollView,
-  Text
+  Text,
+  InteractionManager,
+  Platform,
+  Animated
 } from "react-native";
+//import { TouchableOpacity } from "react-native-gesture-handler";
+
 import * as firebase from "firebase";
 import "firebase/storage";
 import { Ionicons } from "@expo/vector-icons";
@@ -20,17 +24,7 @@ import { connectActionSheet } from "@expo/react-native-action-sheet";
 import * as ImageHandler from "../utils/handleImageFunction";
 import * as Animatable from "react-native-animatable";
 import { SwipeListView } from "react-native-swipe-list-view";
-//import Animated from "react-native-reanimated";
-
 import "firebase/storage";
-
-// const HEADER_HEIGHT = 42;
-// const scrollY = new Animated.Value(0);
-// const diffClampScrollY = Animated.diffClamp(scrollY, 0, HEADER_HEIGHT);
-// const headerY = Animated.interpolate(diffClampScrollY, {
-//   inputRange: [0, HEADER_HEIGHT],
-//   outputRange: [0, -HEADER_HEIGHT]
-// });
 
 class HomeScreen extends Component {
   constructor(props) {
@@ -50,7 +44,8 @@ class HomeScreen extends Component {
       searchedItems: [],
       upDateIsActive: false,
       keyOfItemToUpdate: "",
-      categoryOfItemToUpdate: ""
+      categoryOfItemToUpdate: "",
+      noDataFoundOrSearchTermEmpty: false
     };
   }
 
@@ -163,11 +158,9 @@ class HomeScreen extends Component {
         .update({ category: category });
 
       this.setState({ isLoadingData: false });
-      //this.props.navigation.navigate({ category });
     } catch (error) {
       console.log(error);
     }
-    //console.log(wisdom, category);
   };
 
   deleteItem = async (item, index) => {
@@ -199,7 +192,6 @@ class HomeScreen extends Component {
 
     try {
       const blob = await ImageHandler.prepareBlob(image.uri);
-      //const snapshot = await ref.putString(blob);
       const snapshot = await ref.put(blob);
       let downloadUrl = await snapshot.ref.getDownloadURL();
 
@@ -234,8 +226,6 @@ class HomeScreen extends Component {
     if (result) {
       const downloadUrl = await this.uploadImage(result, item);
       this.props.updateImage({ ...item, uri: downloadUrl });
-
-      //this.props.updateBookImage({ ...item, uri: downloadUrl });
     }
   };
 
@@ -268,6 +258,16 @@ class HomeScreen extends Component {
     this.setState({
       searchedItems: [...this.state.searchedItems, itemsToDisplay]
     });
+
+    if (this.state.searchedItems.length === 0) {
+      this.setState({
+        noDataFoundOrSearchTermEmpty: true
+      });
+    }
+
+    setTimeout(() => {
+      this.setState({ noDataFoundOrSearchTermEmpty: false });
+    }, 3000);
   };
 
   handleUpdateText = data => {
@@ -310,57 +310,116 @@ class HomeScreen extends Component {
   };
 
   render() {
+    // This entire code is to fix a timer error
+    const _setTimeout = global.setTimeout;
+    const _clearTimeout = global.clearTimeout;
+    const MAX_TIMER_DURATION_MS = 60 * 1000;
+    if (Platform.OS === "android") {
+      // Work around issue `Setting a timer for long time`
+      // see: https://github.com/firebase/firebase-js-sdk/issues/97
+      const timerFix = {};
+      const runTask = (id, fn, ttl, args) => {
+        const waitingTime = ttl - Date.now();
+        if (waitingTime <= 1) {
+          InteractionManager.runAfterInteractions(() => {
+            if (!timerFix[id]) {
+              return;
+            }
+            delete timerFix[id];
+            fn(...args);
+          });
+          return;
+        }
+
+        const afterTime = Math.min(waitingTime, MAX_TIMER_DURATION_MS);
+        timerFix[id] = _setTimeout(() => runTask(id, fn, ttl, args), afterTime);
+      };
+
+      global.setTimeout = (fn, time, ...args) => {
+        if (MAX_TIMER_DURATION_MS < time) {
+          const ttl = Date.now() + time;
+          const id = "_lt_" + Object.keys(timerFix).length;
+          runTask(id, fn, ttl, args);
+          return id;
+        }
+        return _setTimeout(fn, time, ...args);
+      };
+
+      global.clearTimeout = id => {
+        if (typeof id === "string" && id.startsWith("_lt_")) {
+          _clearTimeout(timerFix[id]);
+          delete timerFix[id];
+          return;
+        }
+        _clearTimeout(id);
+      };
+    }
+    // Up till here
+
     return (
       <SafeAreaView>
         {this.state.showSearchInput && (
           <Animatable.View animation={"slideInDown"}>
-            <View style={styles.searchView}>
-              <TextInput
-                autoCapitalize={"none"}
-                placeholder="Enter search term "
-                placeholderTextColor="gold"
-                name="search"
-                autoComplete={false}
-                autoCorrect={false}
-                spellCheck={false}
-                style={[
-                  styles.textInput,
-                  {
-                    marginTop: 20,
-                    borderBottomColor: "gold",
-                    borderBottomWidth: 0.8,
-                    height: 30
-                    //paddingBottom: 1
+            <View>
+              <View style={styles.searchView}>
+                <TextInput
+                  autoCapitalize={"none"}
+                  placeholder="Enter search term "
+                  placeholderTextColor="gold"
+                  name="search"
+                  //autoComplete={false}
+                  autoCorrect={false}
+                  spellCheck={false}
+                  style={[
+                    styles.textInput,
+                    {
+                      marginTop: 20,
+                      borderBottomColor: "gold",
+                      borderBottomWidth: 0.8,
+                      height: 30
+                    }
+                  ]}
+                  onChangeText={value =>
+                    this.setState({ searchTerm: value }, () => {
+                      this.handleSearchData;
+                    })
                   }
-                ]}
-                onChangeText={value =>
-                  this.setState({ searchTerm: value }, () => {
-                    this.handleSearchData;
-                  })
-                }
-                ref={component => {
-                  this.textInputRef = component;
-                }}
-              />
-              <Ionicons
-                name="ios-send"
-                size={25}
-                color={"gold"}
-                onPress={() => this.handleSearchData()}
-                style={{ marginTop: 20 }}
-              />
-              <Ionicons
-                name="ios-close"
-                size={32}
-                color={"gold"}
-                onPress={() =>
-                  this.setState({ showSearchInput: false, showIcons: true })
-                }
-                style={{ marginTop: 20 }}
-              />
+                  ref={component => {
+                    this.textInputRef = component;
+                  }}
+                />
+                <Ionicons
+                  name="ios-send"
+                  size={25}
+                  color={"gold"}
+                  onPress={() => this.handleSearchData()}
+                  style={{ marginTop: 20 }}
+                />
+                <Ionicons
+                  name="ios-close"
+                  size={32}
+                  color={"gold"}
+                  onPress={() =>
+                    this.setState({
+                      showSearchInput: false,
+                      showIcons: true,
+                      searchTerm: ""
+                    })
+                  }
+                  style={{ marginTop: 20 }}
+                />
+              </View>
             </View>
           </Animatable.View>
         )}
+        {this.state.noDataFoundOrSearchTermEmpty && (
+          <Animatable.View animation={"slideInLeft"}>
+            <View style={styles.noDataMessage}>
+              <Text style={{ color: "gold" }}>No Data Matched Search Term</Text>
+            </View>
+          </Animatable.View>
+        )}
+
         {this.state.showIcons && (
           <View style={styles.headerIcons}>
             <View
@@ -419,7 +478,7 @@ class HomeScreen extends Component {
                 placeholder="Title "
                 placeholderTextColor="gold"
                 name="title"
-                autoComplete={false}
+                //autoComplete={false}
                 autoCorrect={false}
                 spellCheck={false}
                 value={this.state.title}
@@ -430,7 +489,13 @@ class HomeScreen extends Component {
               />
               <TextInput
                 name="detail"
-                style={[styles.textInput, { marginTop: 20, height: 500 }]}
+                style={[
+                  styles.textInput,
+                  {
+                    marginTop: 20,
+                    height: Platform.OS === "ios" ? 500 : 50
+                  }
+                ]}
                 autoCapitalize={"none"}
                 value={this.state.detail}
                 placeholder="Wisdom "
@@ -439,7 +504,7 @@ class HomeScreen extends Component {
                 editable
                 numberOfLines={10}
                 onChangeText={value => this.setState({ detail: value })}
-                autoComplete={false}
+                //autoComplete={false}
                 autoCorrect={false}
                 spellCheck={false}
                 ref={component => {
@@ -450,30 +515,20 @@ class HomeScreen extends Component {
           )}
         </View>
         {this.state.showAddIcon && (
-          <Animatable.View animation={"slideInRight"}>
-            <View>
-              <TouchableOpacity
-                style={styles.button}
-                onPress={() => {
-                  this.state.upDateIsActive
-                    ? this.UpdateData(this.state.title, this.state.detail)
-                    : this.addData(this.state.title, this.state.detail);
-                }}
-              >
-                <Text style={{ fontSize: 30, color: "#3432a8" }}>+</Text>
-              </TouchableOpacity>
-            </View>
-          </Animatable.View>
+          //<Animatable.View animation={"slideInRight"}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => {
+              this.state.upDateIsActive
+                ? this.UpdateData(this.state.title, this.state.detail)
+                : this.addData(this.state.title, this.state.detail);
+            }}
+          >
+            <Text style={{ fontSize: 30, color: "#3432a8" }}>+</Text>
+          </TouchableOpacity>
+          //</Animatable.View>
         )}
-        <ScrollView
-        // scrollEventThrottle={16}
-        // bounces={false}
-        // onScroll={Animated.event([
-        //   {
-        //     nativeEvent: { contentOffset: { y: scrollY } }
-        //   }
-        // ])}
-        >
+        <ScrollView>
           {this.state.showWisdoms && (
             <View>
               <SwipeListView
@@ -522,27 +577,24 @@ class HomeScreen extends Component {
           )}
         </ScrollView>
         {this.state.showDeleteIcon && (
-          <TouchableOpacity>
-            <Animatable.View animation={"slideInLeft"}>
-              <View style={styles.button1}>
-                <Button
-                  title="X"
-                  style={styles.textStyle}
-                  onPress={() =>
-                    this.setState({
-                      showInput: false,
-                      showDeleteIcon: false,
-                      showIcons: true,
-                      showWisdoms: true,
-                      showAddIcon: false,
-                      title: "",
-                      detail: ""
-                    })
-                  }
-                />
-              </View>
-            </Animatable.View>
+          //<Animatable.View animation={"slideInLeft"}>
+          <TouchableOpacity
+            style={styles.button1}
+            onPress={() =>
+              this.setState({
+                showInput: false,
+                showDeleteIcon: false,
+                showIcons: true,
+                showWisdoms: true,
+                showAddIcon: false,
+                title: "",
+                detail: ""
+              })
+            }
+          >
+            <Text style={{ fontSize: 26, color: "#3432a8" }}>x</Text>
           </TouchableOpacity>
+          //</Animatable.View>
         )}
       </SafeAreaView>
     );
@@ -569,9 +621,10 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     alignItems: "center",
     justifyContent: "center",
-    position: "absolute",
-    right: 20,
-    top: 500
+    position: Platform.OS === "ios" ? "absolute" : "relative",
+    right: Platform.OS === "ios" ? 20 : -350,
+    //left: Platform.OS === "android" ? 350 : 0,
+    top: Platform.OS === "ios" ? 500 : 400
   },
 
   headerIcons: {
@@ -580,12 +633,6 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     marginTop: 10,
     marginLeft: 10
-    //transform: [{ translateY: headerY }],
-    //left: 0,
-    //right: 0,
-    //top: 0,
-    //height: HEADER_HEIGHT,
-    //zIndex: 100
   },
   button1: {
     width: 50,
@@ -594,9 +641,9 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     alignItems: "center",
     justifyContent: "center",
-    position: "absolute",
+    position: Platform.OS === "ios" ? "absolute" : "relative",
     left: 20,
-    top: 500
+    top: Platform.OS === "ios" ? 500 : 400
   },
   searchView: {
     flexDirection: "row",
@@ -618,6 +665,13 @@ const styles = StyleSheet.create({
   },
   updateText: {
     color: "#3432a8"
+  },
+  noDataMessage: {
+    marginTop: 5,
+    marginBottom: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "white"
   }
 });
 

@@ -4,7 +4,8 @@ import {
   StyleSheet,
   View,
   Button,
-  ActivityIndicator
+  ActivityIndicator,
+  Platform
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import FormInput from "../utils/forms/formInput";
@@ -12,7 +13,7 @@ import ValidateForm from "../utils/forms/validateForm";
 
 import * as firebase from "firebase/app";
 import "firebase/auth";
-import AuthCheckScreen from "../screens/AuthCheckScreen";
+//import AuthCheckScreen from "../screens/AuthCheckScreen";
 import * as Animatable from "react-native-animatable";
 
 class LoginScreen extends Component {
@@ -138,7 +139,7 @@ class LoginScreen extends Component {
 
               <View>
                 <Text style={{ color: "#3432a8", marginLeft: 125 }}>
-                  Tenaciuos{" "}
+                  Tenaciuos
                 </Text>
               </View>
             </View>
@@ -166,17 +167,18 @@ class LoginScreen extends Component {
             {this.formErrors()}
             <View style={styles.LoginText}>
               <Button
-                style={{ color: "white" }}
+                //style={{ color: "white" }}
                 title="Login "
-                //onPress={() => this.props.navigation.navigate("HomeScreen")}
                 onPress={() => this.submitUserInfo()}
+                color={Platform.OS === "android" ? "#3432a8" : "white"}
               />
             </View>
             <View style={styles.CreateText}>
               <Button
-                style={{ color: "#3432a8" }}
+                //style={{ color: "#3432a8" }}
                 title="Create Account"
                 onPress={() => this.props.navigation.navigate("RegisterScreen")}
+                color={Platform.OS === "android" ? "#3432a8" : "#3432a8"}
               />
             </View>
           </View>
@@ -234,7 +236,7 @@ const styles = StyleSheet.create({
     borderColor: "#3432a8",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "white"
+    backgroundColor: Platform.OS === "ios" ? "white" : "#3432a8"
   },
   topLogin: {
     flexDirection: "row",

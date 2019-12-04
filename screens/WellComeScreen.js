@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Text, StyleSheet, View, Button } from "react-native";
+import { StyleSheet, View, Button, Platform } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 class WellComeScreen extends Component {
@@ -19,7 +19,6 @@ class WellComeScreen extends Component {
           <Button
             onPress={() => this.props.navigation.navigate("RegisterScreen")}
             title="Register"
-            style={styles.LoginRegisterButton}
             color="#3432a8"
           />
         </View>
@@ -36,12 +35,13 @@ const styles = StyleSheet.create({
     backgroundColor: "gold"
   },
   LoginRegisterButton: {
-    backgroundColor: "transparent",
+    backgroundColor: Platform.OS === "ios" ? "transparent" : "#3432a8",
     borderWidth: 0.5,
     borderColor: "#3432a8",
     marginBottom: 11,
     width: 210,
-    borderRadius: 10
+    borderRadius: Platform.OS === "ios" ? 10 : 10,
+    overflow: "hidden"
   }
 });
 
