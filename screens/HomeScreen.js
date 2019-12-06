@@ -539,18 +539,18 @@ class HomeScreen extends Component {
           )}
         </View>
         {this.state.showAddIcon && (
-          //<Animatable.View animation={"slideInRight"}>
           <TouchableOpacity
-            style={styles.button}
             onPress={() => {
               this.state.upDateIsActive
                 ? this.UpdateData(this.state.title, this.state.detail)
                 : this.addData(this.state.title, this.state.detail);
             }}
+            style={styles.button}
           >
-            <Text style={{ fontSize: 30, color: "#3432a8" }}>+</Text>
+            <Animatable.View animation={"slideInRight"}>
+              <Text style={{ fontSize: 30, color: "#3432a8" }}>+</Text>
+            </Animatable.View>
           </TouchableOpacity>
-          //</Animatable.View>
         )}
         <ScrollView>
           {this.state.showWisdoms && (
@@ -601,9 +601,7 @@ class HomeScreen extends Component {
           )}
         </ScrollView>
         {this.state.showDeleteIcon && (
-          //<Animatable.View animation={"slideInLeft"}>
           <TouchableOpacity
-            style={styles.button1}
             onPress={() =>
               this.setState({
                 showInput: false,
@@ -615,10 +613,12 @@ class HomeScreen extends Component {
                 detail: ""
               })
             }
+            style={styles.button1}
           >
-            <Text style={{ fontSize: 26, color: "#3432a8" }}>x</Text>
+            <Animatable.View animation={"slideInLeft"}>
+              <Text style={{ fontSize: 26, color: "#3432a8" }}>x</Text>
+            </Animatable.View>
           </TouchableOpacity>
-          //</Animatable.View>
         )}
       </SafeAreaView>
     );
@@ -647,7 +647,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     position: Platform.OS === "ios" ? "absolute" : "relative",
     right: Platform.OS === "ios" ? 20 : -350,
-    //left: Platform.OS === "android" ? 350 : 0,
+    //left: Platform.OS === "ios" ? 300 : 90,
     top: Platform.OS === "ios" ? 500 : 400
   },
 
