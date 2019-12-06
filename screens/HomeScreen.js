@@ -44,7 +44,8 @@ class HomeScreen extends Component {
       upDateIsActive: false,
       keyOfItemToUpdate: "",
       categoryOfItemToUpdate: "",
-      noDataFoundOrSearchTermEmpty: false
+      noDataFoundOrSearchTermEmpty: false,
+      slowFadeOutSearchInput: true
     };
   }
 
@@ -309,6 +310,30 @@ class HomeScreen extends Component {
     }
   };
 
+  handldeCloseSearchInput = () => {
+    this.setState(
+      {
+        slowFadeOutSearchInput: false
+      },
+      () => {
+        setTimeout(() => {
+          this.setState(
+            {
+              showSearchInput: false,
+              showIcons: true,
+              searchTerm: ""
+            },
+            () => {
+              this.setState({
+                slowFadeOutSearchInput: true
+              });
+            }
+          );
+        }, 1000);
+      }
+    );
+  };
+
   render() {
     // This entire code is to fix a timer error
     const _setTimeout = global.setTimeout;
@@ -359,7 +384,11 @@ class HomeScreen extends Component {
     return (
       <SafeAreaView>
         {this.state.showSearchInput && (
-          <Animatable.View animation={"slideInDown"}>
+          <Animatable.View
+            animation={
+              this.state.slowFadeOutSearchInput ? "slideInDown" : "fadeOutUp"
+            }
+          >
             <View style={styles.searchView}>
               <TextInput
                 autoCapitalize={"none"}
@@ -398,18 +427,13 @@ class HomeScreen extends Component {
                 name="ios-close"
                 size={32}
                 color={"gold"}
-                onPress={() =>
-                  this.setState({
-                    showSearchInput: false,
-                    showIcons: true,
-                    searchTerm: ""
-                  })
-                }
+                onPress={() => this.handldeCloseSearchInput()}
                 style={{ marginTop: 20 }}
               />
             </View>
           </Animatable.View>
         )}
+
         {this.state.noDataFoundOrSearchTermEmpty && (
           <Animatable.View animation={"slideInLeft"}>
             <View style={styles.noDataMessage}>
@@ -419,45 +443,47 @@ class HomeScreen extends Component {
         )}
 
         {this.state.showIcons && (
-          <View style={styles.headerIcons}>
-            <View
-              style={{
-                justifyContent: "flex-end",
-                flexDirection: "row"
-              }}
-            >
-              <Ionicons
-                name="ios-create"
-                size={28}
-                color={"gold"}
-                onPress={() =>
-                  this.setState(
-                    {
-                      showInput: !this.state.showInput,
-                      showWisdoms: false
-                    },
-                    () => {
-                      this.setState({
-                        showIcons: !this.state.showIcons,
-                        showDeleteIcon: true,
-                        showAddIcon: true
-                      });
-                    }
-                  )
-                }
-                style={{ marginRight: 15 }}
-              />
-              <Ionicons
-                name="ios-search"
-                color={"gold"}
-                size={28}
-                style={{ marginRight: 10 }}
-                onPress={() =>
-                  this.setState({ showSearchInput: true, showIcons: false })
-                }
-              />
+          <Animatable.View animation={"slideInRight"}>
+            <View style={styles.headerIcons}>
+              <View
+                style={{
+                  justifyContent: "flex-end",
+                  flexDirection: "row"
+                }}
+              >
+                <Ionicons
+                  name="ios-create"
+                  size={28}
+                  color={"gold"}
+                  onPress={() =>
+                    this.setState(
+                      {
+                        showInput: !this.state.showInput,
+                        showWisdoms: false
+                      },
+                      () => {
+                        this.setState({
+                          showIcons: !this.state.showIcons,
+                          showDeleteIcon: true,
+                          showAddIcon: true
+                        });
+                      }
+                    )
+                  }
+                  style={{ marginRight: 15 }}
+                />
+                <Ionicons
+                  name="ios-search"
+                  color={"gold"}
+                  size={28}
+                  style={{ marginRight: 10 }}
+                  onPress={() =>
+                    this.setState({ showSearchInput: true, showIcons: false })
+                  }
+                />
+              </View>
             </View>
-          </View>
+          </Animatable.View>
         )}
         <View style={styles.container}>
           {this.state.showInput && (
