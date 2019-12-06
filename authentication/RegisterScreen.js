@@ -125,9 +125,11 @@ class RegisterScreen extends Component {
 
   formErrors = () =>
     this.state.formError ? (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorMessage}>Check your information</Text>
-      </View>
+      <Animatable.View animation={"fadeInDown"} delay={400}>
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorMessage}>Check your information</Text>
+        </View>
+      </Animatable.View>
     ) : null;
 
   render() {

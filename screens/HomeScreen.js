@@ -11,7 +11,6 @@ import {
   Platform,
   Animated
 } from "react-native";
-//import { TouchableOpacity } from "react-native-gesture-handler";
 
 import * as firebase from "firebase";
 import "firebase/storage";
@@ -250,24 +249,25 @@ class HomeScreen extends Component {
   };
 
   handleSearchData = () => {
-    const itemsToDisplay = this.props.Wisdoms.wisdoms.filter(
-      wisdom =>
-        wisdom.title.toLowerCase().includes(this.state.searchTerm.toLowerCase())
-      //wisdom.title.toLowerCase() === this.state.searchTerm.toLowerCase()
+    const itemsToDisplay = this.props.Wisdoms.wisdoms.filter(wisdom =>
+      wisdom.title.toLowerCase().includes(this.state.searchTerm.toLowerCase())
     );
-    this.setState({
-      searchedItems: [...this.state.searchedItems, itemsToDisplay]
-    });
-
-    if (this.state.searchedItems.length === 0) {
-      this.setState({
-        noDataFoundOrSearchTermEmpty: true
-      });
-    }
+    this.setState(
+      {
+        searchedItems: [itemsToDisplay]
+      },
+      () => {
+        if (itemsToDisplay.length === 0) {
+          this.setState({
+            noDataFoundOrSearchTermEmpty: true
+          });
+        }
+      }
+    );
 
     setTimeout(() => {
       this.setState({ noDataFoundOrSearchTermEmpty: false });
-    }, 3000);
+    }, 2000);
   };
 
   handleUpdateText = data => {
@@ -360,55 +360,53 @@ class HomeScreen extends Component {
       <SafeAreaView>
         {this.state.showSearchInput && (
           <Animatable.View animation={"slideInDown"}>
-            <View>
-              <View style={styles.searchView}>
-                <TextInput
-                  autoCapitalize={"none"}
-                  placeholder="Enter search term "
-                  placeholderTextColor="gold"
-                  name="search"
-                  //autoComplete={false}
-                  autoCorrect={false}
-                  spellCheck={false}
-                  style={[
-                    styles.textInput,
-                    {
-                      marginTop: 20,
-                      borderBottomColor: "gold",
-                      borderBottomWidth: 0.8,
-                      height: 30
-                    }
-                  ]}
-                  onChangeText={value =>
-                    this.setState({ searchTerm: value }, () => {
-                      this.handleSearchData;
-                    })
+            <View style={styles.searchView}>
+              <TextInput
+                autoCapitalize={"none"}
+                placeholder="Enter search term "
+                placeholderTextColor="gold"
+                name="search"
+                //autoComplete={false}
+                autoCorrect={false}
+                spellCheck={false}
+                style={[
+                  styles.textInput,
+                  {
+                    marginTop: 20,
+                    borderBottomColor: "gold",
+                    borderBottomWidth: 0.8,
+                    height: 30
                   }
-                  ref={component => {
-                    this.textInputRef = component;
-                  }}
-                />
-                <Ionicons
-                  name="ios-send"
-                  size={25}
-                  color={"gold"}
-                  onPress={() => this.handleSearchData()}
-                  style={{ marginTop: 20 }}
-                />
-                <Ionicons
-                  name="ios-close"
-                  size={32}
-                  color={"gold"}
-                  onPress={() =>
-                    this.setState({
-                      showSearchInput: false,
-                      showIcons: true,
-                      searchTerm: ""
-                    })
-                  }
-                  style={{ marginTop: 20 }}
-                />
-              </View>
+                ]}
+                onChangeText={value =>
+                  this.setState({ searchTerm: value }, () => {
+                    this.handleSearchData;
+                  })
+                }
+                ref={component => {
+                  this.textInputRef = component;
+                }}
+              />
+              <Ionicons
+                name="ios-send"
+                size={25}
+                color={"gold"}
+                onPress={() => this.handleSearchData()}
+                style={{ marginTop: 20 }}
+              />
+              <Ionicons
+                name="ios-close"
+                size={32}
+                color={"gold"}
+                onPress={() =>
+                  this.setState({
+                    showSearchInput: false,
+                    showIcons: true,
+                    searchTerm: ""
+                  })
+                }
+                style={{ marginTop: 20 }}
+              />
             </View>
           </Animatable.View>
         )}
