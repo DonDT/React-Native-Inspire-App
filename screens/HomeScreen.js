@@ -24,6 +24,7 @@ import * as ImageHandler from "../utils/handleImageFunction";
 import * as Animatable from "react-native-animatable";
 import { SwipeListView } from "react-native-swipe-list-view";
 import "firebase/storage";
+import ActionButton from "../components/actionButton";
 
 class HomeScreen extends Component {
   constructor(props) {
@@ -334,14 +335,30 @@ class HomeScreen extends Component {
     );
   };
 
+  handleButtonAction = () => {
+    this.setState({
+      showInput: false,
+      showDeleteIcon: false,
+      showIcons: true,
+      showWisdoms: true,
+      showAddIcon: false,
+      title: "",
+      detail: ""
+    });
+  };
+
+  handleButtonPlus = () => {
+    this.state.upDateIsActive
+      ? this.UpdateData(this.state.title, this.state.detail)
+      : this.addData(this.state.title, this.state.detail);
+  };
+
   render() {
     // This entire code is to fix a timer error
     const _setTimeout = global.setTimeout;
     const _clearTimeout = global.clearTimeout;
     const MAX_TIMER_DURATION_MS = 60 * 1000;
     if (Platform.OS === "android") {
-      // Work around issue `Setting a timer for long time`
-      // see: https://github.com/firebase/firebase-js-sdk/issues/97
       const timerFix = {};
       const runTask = (id, fn, ttl, args) => {
         const waitingTime = ttl - Date.now();
@@ -539,18 +556,11 @@ class HomeScreen extends Component {
           )}
         </View>
         {this.state.showAddIcon && (
-          <TouchableOpacity
-            onPress={() => {
-              this.state.upDateIsActive
-                ? this.UpdateData(this.state.title, this.state.detail)
-                : this.addData(this.state.title, this.state.detail);
-            }}
-            style={styles.button}
-          >
-            <Animatable.View animation={"slideInRight"}>
-              <Text style={{ fontSize: 30, color: "#3432a8" }}>+</Text>
-            </Animatable.View>
-          </TouchableOpacity>
+          <ActionButton
+            position="right"
+            action="+"
+            onPress={this.handleButtonPlus}
+          />
         )}
         <ScrollView>
           {this.state.showWisdoms && (
@@ -601,24 +611,11 @@ class HomeScreen extends Component {
           )}
         </ScrollView>
         {this.state.showDeleteIcon && (
-          <TouchableOpacity
-            onPress={() =>
-              this.setState({
-                showInput: false,
-                showDeleteIcon: false,
-                showIcons: true,
-                showWisdoms: true,
-                showAddIcon: false,
-                title: "",
-                detail: ""
-              })
-            }
-            style={styles.button1}
-          >
-            <Animatable.View animation={"slideInLeft"}>
-              <Text style={{ fontSize: 26, color: "#3432a8" }}>x</Text>
-            </Animatable.View>
-          </TouchableOpacity>
+          <ActionButton
+            position="left"
+            action="x"
+            onPress={this.handleButtonAction}
+          />
         )}
       </SafeAreaView>
     );
@@ -638,18 +635,6 @@ const styles = StyleSheet.create({
   inputContainer: {
     alignItems: "center"
   },
-  button: {
-    width: 50,
-    height: 50,
-    backgroundColor: "gold",
-    borderRadius: 50,
-    alignItems: "center",
-    justifyContent: "center",
-    position: Platform.OS === "ios" ? "absolute" : "relative",
-    right: Platform.OS === "ios" ? 20 : -350,
-    //left: Platform.OS === "ios" ? 300 : 90,
-    top: Platform.OS === "ios" ? 500 : 400
-  },
 
   headerIcons: {
     flexDirection: "row",
@@ -658,17 +643,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginLeft: 10
   },
-  button1: {
-    width: 50,
-    height: 50,
-    backgroundColor: "gold",
-    borderRadius: 50,
-    alignItems: "center",
-    justifyContent: "center",
-    position: Platform.OS === "ios" ? "absolute" : "relative",
-    left: 20,
-    top: Platform.OS === "ios" ? 500 : 400
-  },
+
   searchView: {
     flexDirection: "row",
     alignItems: "center",
